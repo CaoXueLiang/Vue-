@@ -1,17 +1,27 @@
 import parseTemplateToTokens from "./parseTemplateToTokens";
+import renderTemplate from "./renderTemplate";
 
 window.Custom_TemplateEngine = {
   render(template, data) {
+    //将模板字符串，转化为tokens
     let tokes = parseTemplateToTokens(template);
-    console.log(tokes);
+    console.log("tokes", tokes);
+    //将tokens和data转化为dom字符串
+    let domStr = renderTemplate(tokes, data);
+    console.log("domstr", domStr);
+    return domStr;
   },
 };
 
-let tmpTemplate = `我买了一个{{thing}}，好{{mood}}啊`;
-let tmpData = {
-  thing: "华为手机",
-  mood: "开心",
-};
+// let tmpTemplate = `<div>我买了一个{{thing}}，好{{a.b.c}}啊</div>`;
+// let tmpData = {
+//   thing: "华为手机",
+//   a: {
+//     b: {
+//       c: "伤心",
+//     },
+//   },
+// };
 
 // 模板字符串
 var templateStr = `
@@ -19,11 +29,11 @@ var templateStr = `
         <ul>
             {{#students}}
             <li class="myli">
-                学生{{item.name}}的爱好是
+                学生{{name}}的爱好是
                 <ol>
-                    {{#item.hobbies}}
+                    {{#hobbies}}
                     <li>{{.}}</li>
-                    {{/item.hobbies}}
+                    {{/hobbies}}
                 </ol>
             </li>
             {{/students}}
@@ -40,4 +50,5 @@ var data = {
   ],
 };
 
-Custom_TemplateEngine.render(templateStr, data);
+let domstr = Custom_TemplateEngine.render(templateStr, data);
+document.body.innerHTML = domstr;

@@ -10,7 +10,7 @@ function parseTemplateToTokens(template) {
     word = scaner.scanUnitil("{{");
     //跳过`{{`
     scaner.scan("{{");
-    tokes.push(["text", word]);
+    tokes.push(["text", trimBlank(word)]);
     word = scaner.scanUnitil("}}");
     scaner.scan("}}");
     if (word.length) {
@@ -24,6 +24,27 @@ function parseTemplateToTokens(template) {
     }
   }
   return nestTokes(tokes);
+}
+
+function trimBlank(word) {
+  let _word = "";
+  let isInnerElement = false;
+  for (let index = 0; index < word.length; index++) {
+    const element = word[index];
+    if (element.startsWith("<")) {
+      isInnerElement = true;
+    } else if (element.startsWith(">")) {
+      isInnerElement = false;
+    }
+    if (!isInnerElement) {
+      _word += element.replace(/\s/g, "");
+    }
+    if (isInnerElement) {
+      _word += element;
+    }
+  }
+
+  return _word;
 }
 
 export default parseTemplateToTokens;
