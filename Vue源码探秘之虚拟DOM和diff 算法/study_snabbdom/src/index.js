@@ -28,11 +28,7 @@ const tmpButton = document.getElementById("tmpButton");
 // const vnode1 = h("div", {}, "嘿嘿嘿");
 
 //第三个参数是数组
-const vnode1 = h("ul", {}, [
-  h("li", { key: "a" }, "A"),
-  h("li", { key: "b" }, "B"),
-  h("li", { key: "3" }, "C"),
-]);
+const vnode1 = h("ul", {}, h("li", { key: "a" }, "A"));
 
 //第三个参数多层嵌套`h`函数
 // const vnode1 = h("ul", { key: "a" }, [

@@ -13,11 +13,12 @@ module.exports = {
   },
   devServer: {
     open: true,
+    port: "9090",
   },
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
-      title: "sanbbdom_study",
+      title: "my_anobbdom",
       template: "./public/index.html",
     }),
     new DefinePlugin({
