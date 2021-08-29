@@ -3,32 +3,30 @@ import patch from "./compoments/patch";
 
 const constain = document.getElementById("container");
 const button = document.getElementById("tmpButton");
-constain.innerText = "我是contain";
 
-let vnode1 = h("div", { key: "a" }, "呵呵呵呵呵");
-patch(constain, vnode1);
-
-let vnode2 = h("div", { key: "a" }, [
-  h("div", {}, "哈哈哈"),
-  h("div", {}, "哈哈哈"),
-  h("div", {}, "哈哈哈"),
+const myVnode1 = h("ul", {}, [
+  h("li", { key: "A" }, "A"),
+  h("li", { key: "B" }, "B"),
+  h("li", { key: "C" }, "C"),
+  h("li", { key: "D" }, "D"),
+  h("li", { key: "E" }, "E"),
 ]);
-console.log(vnode2);
+patch(constain, myVnode1);
 
-// let vnode3 = h("div", {}, [
-//   h("span", {}, "哈哈哈"),
-//   h("span", {}, "嘿嘿嘿"),
-//   h("span", {}, "呵呵"),
-// ]);
-// console.log(vnode3);
-
-// let vnode4 = h("div", {}, [
-//   h("span", {}, "哈哈哈"),
-//   h("span", {}, [h("div", {}, "A"), h("div", {}, "B"), h("div", {}, "C")]),
-//   h("span", {}, "呵呵"),
-// ]);
-// console.log(vnode4);
+// 新节点
+const myVnode2 = h("ul", {}, [
+  h("li", { key: "Q" }, "Q"),
+  h("li", { key: "T" }, "T"),
+  h("li", { key: "B" }, "B"),
+  h("li", { key: "A" }, "A"),
+  h("li", { key: "N" }, "N"),
+  h("li", { key: "Z" }, "Z"),
+  h("li", { key: "M" }, "M"),
+  h("li", { key: "C" }, "C"),
+  h("li", { key: "D" }, "D"),
+  h("li", { key: "E" }, "E"),
+]);
 
 button.onclick = function () {
-  patch(vnode1, vnode2);
+  patch(myVnode1, myVnode2);
 };
