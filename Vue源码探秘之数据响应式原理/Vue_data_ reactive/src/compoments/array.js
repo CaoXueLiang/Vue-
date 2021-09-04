@@ -24,7 +24,8 @@ methodsToPatch.forEach(function (method) {
 
     console.log(`-----监听数组的变化----${method}----${args}`);
     const ob = this.__ob__;
-    let inserted; //记录插入的元素，对插入的元素也要添加`Observe`
+    //记录插入的元素，对插入的元素也要添加`Observe`
+    let inserted;
     if (method === "push" || method === "unshift") {
       inserted = args;
     }

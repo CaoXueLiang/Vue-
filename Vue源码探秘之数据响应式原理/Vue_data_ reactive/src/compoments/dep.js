@@ -4,7 +4,7 @@
 let uid = 0;
 export default class Dep {
   constructor() {
-    this.subs = []; //用于依赖收集，放的是watcher实例
+    this.subs = [];
     this.id = uid++;
   }
 

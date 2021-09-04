@@ -27,27 +27,27 @@ let normalObj = {
 };
 
 observe(normalObj);
-// normalObj.age = 30;
-// normalObj.name = "小丽";
-// normalObj.a.b = "我是a.b";
-// normalObj.a.d.m = "我是m";
-// console.log(normalObj.a.d.n.favorite);
-// normalObj.favorite.push("语文", "数学");
-// normalObj.favorite.pop();
-// normalObj.favorite.unshift("英语");
-console.log(normalObj);
+// console.log(normalObj);
 
-new Watcher(normalObj, "name", function (target, newValue, oldValue) {
-  console.log(`----触发了watcher---- ${newValue}`);
-});
+// new Watcher(normalObj, "name", function (target, newValue, oldValue) {
+//   console.log(`----触发了watcher---- ${newValue}`);
+// });
 
-new Watcher(normalObj, "a.b", function (target, newValue, oldValue) {
-  console.log(`----触发了watcher---- ${newValue}`);
-});
+// new Watcher(normalObj, "a.b", function (target, newValue, oldValue) {
+//   console.log(`----触发了watcher---- ${newValue}`);
+// });
 
 new Watcher(normalObj, "a.d.m", function (target, newValue, oldValue) {
-  console.log(`----触发了watcher---- ${newValue}`);
+  console.log(`--触发了watcher--oldValue: ${oldValue} newValue: ${newValue}  `);
 });
-normalObj.name = "小丽";
-normalObj.a.b = "b222";
+
+new Watcher(normalObj, "favorite", function (target, newValue, oldValue) {
+  console.log(`----触发了watcher---- ${JSON.stringify(newValue)}`);
+});
+
+// normalObj.name = "小丽";
+// normalObj.a.b = "b222";
 normalObj.a.d.m = "mmmmmmmmmmmm";
+normalObj.favorite.push("语文", "数学");
+// normalObj.favorite.pop();
+// normalObj.favorite.unshift("英语");

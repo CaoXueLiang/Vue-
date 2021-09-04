@@ -1,7 +1,3 @@
-/**
- *  watcher类
- */
-
 import Dep from "./dep";
 
 var uid = 0;
@@ -16,7 +12,11 @@ export default class Watcher {
 
   update() {
     //当前对象,newValue,oldValue
-    this.callback(this.target, this.get(), this.value);
+    this.callback(
+      this.target,
+      this.parsePath(this.target, this.express),
+      this.value
+    );
   }
 
   get() {

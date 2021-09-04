@@ -9,16 +9,13 @@ export function defineReactive(obj, key, val) {
   if (arguments.length === 2) {
     val = obj[key];
   }
-
-  const dep = new Dep();
-
+  const dep = new Dep(); //定义在闭包中的dep,对象的每个属性`key`都会有
   let childOb = observe(val); //下一级可能也是对象，需要`Observe`
 
   Object.defineProperty(obj, key, {
     configurable: true,
     enumerable: true,
     set(newValue) {
-      // console.log(`设置属性:${key}  ${newValue}`);
       if (val === newValue) {
         return;
       }
@@ -27,17 +24,16 @@ export function defineReactive(obj, key, val) {
       childOb = observe(val);
       //发布通知
       dep.notify();
-      // console.log(dep);
     },
     get() {
       //如果处于依赖收集阶段
       if (Dep.target) {
         dep.depend();
         if (childOb) {
+          //当`obj`是数组时，`childOb.dep.depend()`收集watcher到数组中，在`array.js` 中使用 ob.dep.notify();
           childOb.dep.depend();
         }
       }
-      // console.log(`访问属性：${val}`);
       return val;
     },
   });
@@ -58,7 +54,7 @@ export function observe(value) {
     ob = value.__ob__;
   } else {
     ob = new Observer(value);
-    def(value, "__ob__", ob, false); //`__ob__`定义为不可枚举属性
+    def(value, "__ob__", ob, false);
   }
   return ob;
 }
@@ -89,7 +85,7 @@ export class Observer {
     }
   }
 
-  //观察数组中的项
+  //观察数组中的项，数组中的每一项可能还是对象，需要`Observe`
   observeArray(items) {
     for (let index = 0; index < items.length; index++) {
       const element = items[index];
