@@ -10,7 +10,7 @@
 
 当把一个`JavaScript对象`传入Vue作为`data`的选项，Vue会遍历此对象上的所有属性。并使用 [`Object.defineProperty`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty) 把这些 property 全部转为 `getter/setter`。每个组件实例都对应一个 **watcher** 实例，它会在组件渲染的过程中把“接触”过的数据 property 记录为依赖。之后当依赖项的 setter 触发时，会通知 **watcher**，从而使它关联的组件重新渲染。
 
-![vue响应式原理](/Users/xueliangcao/Downloads/vue响应式原理.png)
+![vue响应式原理](https://i0.hdslb.com/bfs/album/7d4121643c125a82090362d84f06c994e99432e8.png)
 
 #### 1.对象的监听
 
@@ -39,7 +39,7 @@ export function defineReactive(obj, key, val) {
 
 #### 2.数组的监听
 
-![Snipaste_2021-09-04_18-37-50](/Users/xueliangcao/Desktop/Snipaste_2021-09-04_18-37-50.png)
+![Snipaste_2021-09-04_18-37-50](https://i0.hdslb.com/bfs/album/d70763e82a55676ae1dd15ec5ef79ed45fda7abd.png)
 
 对于数组通过`arrayMethods = Object.create(arrayproto);`已数组原型为原型创建arrayMethods对象，并重写数组的7个方法。这样就会覆盖其原型上方法。最后将数组实例的原型设置为`arrayMethods`   通过`Object.setPrototypeOf(*value*, arrayMethods);`。
 
@@ -178,5 +178,3 @@ export default class Watcher {
 ```
 
 
-
-完整的代码地址：
