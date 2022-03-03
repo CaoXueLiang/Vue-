@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Vue 源码解读</title>
+  </head>
+  <body>
+    <div id="app">
+      <div>{{msg}}</div>
+      <my-compoment></my-compoment>
+    </div>
+    <script src="../dist/vue.js"></script>
+    <script>
+      Vue.component("my-compoment", {
+        props: {
+          normalInfo: String,
+          countNumber: Number,
+        },
+        data() {
+          return {
+            count: 0,
+          };
+        },
+        methods: {
+          queryPerson() {
+            console.log("查询人员");
+          },
+          countNumberAnother() {},
+        },
+        template:
+          '<button v-on:click="count++">You clicked me {{ count }} times.</button>',
+      });
+      new Vue({
+        el: "#app",
+        data: {
+          msg: "hello vue",
+        },
+        beforeCreate() {
+          console.log("------beforeCreate-----");
+        },
+        created() {
+          console.log("------created-----");
+        },
+        methods: {
+          testMethods() {
+            console.log("---test---");
+          },
+        },
+      });
+    </script>
+  </body>
+</html>

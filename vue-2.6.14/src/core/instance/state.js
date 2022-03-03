@@ -51,7 +51,7 @@ export function proxy(target: Object, sourceKey: string, key: string) {
  * 1.数据响应式入口：分别处理 props,methods,data,computed,watche
  * 2.优先级：props,method,data,computed 对象中的属性不能重复，优先级和列出的顺序一致
  */
-
+//props,methods,data,computed,watch
 /**
  * computed 和 watch 在本质是没有区别的，都是通过 watcher 去实现的响应式
  * 非要说有区别，那也只是在使用方式上的区别，简单来说
