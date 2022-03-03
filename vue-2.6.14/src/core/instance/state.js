@@ -78,7 +78,8 @@ export function initState(vm: Component) {
   //3.判重，computed 中的key,不能和data,props,methods中的属性重复
   if (opts.computed) initComputed(vm, opts.computed);
   if (opts.watch && opts.watch !== nativeWatch) {
-    //为每个`watcher.key` 创建`watcher`实例，key和watcher实例可能是1对多的关系
+    //1.为每个`watcher.key` 创建`watcher`实例，key和watcher实例可能是1对多的关系
+    //2.如果设置了immediate,则立即执行回调函数
     initWatch(vm, opts.watch);
   }
 }
