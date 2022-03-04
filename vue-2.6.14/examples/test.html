@@ -1,63 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <title>Vue 源码解读</title>
+    <title>methods、computed、watch 有什么区别</title>
   </head>
+
   <body>
     <div id="app">
-      <div>{{msg}}</div>
-      <my-compoment></my-compoment>
-      <button @click="clickedChanged">changed</button>
+      <!-- methods -->
+      <div>{{ returnMsg() }}</div>
+      <div>{{ returnMsg() }}</div>
+      <!-- computed -->
+      <div>{{ getMsg }}</div>
+      <div>{{ getMsg }}</div>
     </div>
-    <script src="../dist/vue.js"></script>
+    <script src="../../dist/vue.js"></script>
     <script>
-      Vue.component("my-compoment", {
-        props: {
-          normalInfo: String,
-          countNumber: Number,
-        },
-        data() {
-          return {
-            count: 0,
-          };
-        },
-        methods: {
-          queryPerson() {
-            console.log("查询人员");
-          },
-          countNumberAnother() {},
-        },
-        template:
-          '<button v-on:click="count++">You clicked me {{ count }} times.</button>',
-      });
       new Vue({
         el: "#app",
         data: {
-          msg: "hello vue",
-          info: {
-            name: "xiaoming",
-            age: "20",
+          msg: "test",
+        },
+        mounted() {
+          setTimeout(() => {
+            this.msg = "msg is changed";
+          }, 1000);
+        },
+        methods: {
+          returnMsg() {
+            console.log("methods: returnMsg");
+            return this.msg;
+          },
+        },
+        computed: {
+          getMsg() {
+            console.log("computed: getMsg");
+            return this.msg + " hello computed";
           },
         },
         watch: {
-          msg: {
-            handler(newValue) {
-              console.log("---mag发生改变----", newValue);
-            },
-            immediate: true,
-            deep: true,
-          },
-        },
-        created() {
-          console.log("---created--", this.info);
-        },
-        methods: {
-          testMethods() {
-            console.log("---test---");
-          },
-          clickedChanged() {
-            this.msg = "hhhhhmsg";
+          msg: function (val, oldVal) {
+            console.log("watch: msg");
+            new Promise((resolve) => {
+              setTimeout(() => {
+                this.msg = "msg is changed by watch";
+              }, 1000);
+            });
           },
         },
       });

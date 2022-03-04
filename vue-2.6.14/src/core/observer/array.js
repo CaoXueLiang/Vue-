@@ -2,7 +2,6 @@
  * 定义拦截器，用于拦截数组的操作
  * 对数组的 push，pop，shift，unshift，splice，sort，reverse 7个方法进行拦截
  */
-
 import { def } from "../util/index";
 
 // 获取数组的原型方法
