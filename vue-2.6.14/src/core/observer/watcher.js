@@ -177,10 +177,6 @@ export default class Watcher {
     }
   }
 
-  /**
-   * Scheduler job interface.
-   * Will be called by the scheduler.
-   */
   run() {
     if (this.active) {
       const value = this.get();
