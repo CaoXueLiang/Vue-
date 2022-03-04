@@ -8,6 +8,7 @@
     <div id="app">
       <div>{{msg}}</div>
       <my-compoment></my-compoment>
+      <button @click="clickedChanged">changed</button>
     </div>
     <script src="../dist/vue.js"></script>
     <script>
@@ -34,16 +35,29 @@
         el: "#app",
         data: {
           msg: "hello vue",
+          info: {
+            name: "xiaoming",
+            age: "20",
+          },
         },
-        beforeCreate() {
-          console.log("------beforeCreate-----");
+        watch: {
+          msg: {
+            handler(newValue) {
+              console.log("---mag发生改变----", newValue);
+            },
+            immediate: true,
+            deep: true,
+          },
         },
         created() {
-          console.log("------created-----");
+          console.log("---created--", this.info);
         },
         methods: {
           testMethods() {
             console.log("---test---");
+          },
+          clickedChanged() {
+            this.msg = "hhhhhmsg";
           },
         },
       });

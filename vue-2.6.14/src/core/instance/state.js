@@ -270,6 +270,11 @@ export function defineComputed(
   Object.defineProperty(target, key, sharedPropertyDefinition);
 }
 
+/**
+ * computed属性值会缓存的原理是：watcher.ditry, watcher.evaluate, watcher.update实现的
+ *
+ *
+ */
 function createComputedGetter(key) {
   return function computedGetter() {
     const watcher = this._computedWatchers && this._computedWatchers[key];
