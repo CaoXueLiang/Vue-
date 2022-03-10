@@ -1,50 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>methods、computed、watch 有什么区别</title>
-  </head>
+  <head> </head>
 
   <body>
     <div id="app">
-      <!-- methods -->
-      <div>{{ returnMsg() }}</div>
-      <div>{{ returnMsg() }}</div>
-      <!-- computed -->
-      <div>{{ getMsg }}</div>
-      <div>{{ getMsg }}</div>
+      <button-counter
+        @hook:mounted="hookMounted"
+        @hook:created="hookCreated"
+      ></button-counter>
+      <div>{{msg}}</div>
     </div>
     <script src="../../dist/vue.js"></script>
     <script>
+      Vue.component("button-counter", {
+        data: function () {
+          return {
+            count: 0,
+          };
+        },
+        template: "<div>我是子组件-{{count}}</div>",
+      });
+
       new Vue({
         el: "#app",
         data: {
           msg: "test",
         },
-        mounted() {
-          setTimeout(() => {
-            this.msg = "msg is changed";
-          }, 1000);
-        },
+        created() {},
+        mounted() {},
         methods: {
-          returnMsg() {
-            console.log("methods: returnMsg");
-            return this.msg;
+          hookCreated() {
+            console.log("-----子组件created-----");
           },
-        },
-        computed: {
-          getMsg() {
-            console.log("computed: getMsg");
-            return this.msg + " hello computed";
-          },
-        },
-        watch: {
-          msg: function (val, oldVal) {
-            console.log("watch: msg");
-            new Promise((resolve) => {
-              setTimeout(() => {
-                this.msg = "msg is changed by watch";
-              }, 1000);
-            });
+          hookMounted() {
+            console.log("-----子组件mounted-----");
           },
         },
       });
