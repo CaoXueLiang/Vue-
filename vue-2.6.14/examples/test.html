@@ -9,6 +9,11 @@
         @hook:created="hookCreated"
       ></button-counter>
       <div>{{msg}}</div>
+      <!-- 模版中每引用一次响应式数据，就会生成一个 watcher -->
+      <!-- watcher 1 -->
+      <div class="msg1">{{ msg }}</div>
+      <!-- watcher 2 -->
+      <div class="msg2">{{ msg }}</div>
     </div>
     <script src="../../dist/vue.js"></script>
     <script>
@@ -20,14 +25,17 @@
         },
         template: "<div>我是子组件-{{count}}</div>",
       });
-
-      new Vue({
+      // debugger; 用于断点调试
+      var vm = new Vue({
         el: "#app",
         data: {
           msg: "test",
         },
         created() {},
-        mounted() {},
+        beforeMouted() {},
+        mounted() {
+          console.log(this);
+        },
         methods: {
           hookCreated() {
             console.log("-----子组件created-----");
