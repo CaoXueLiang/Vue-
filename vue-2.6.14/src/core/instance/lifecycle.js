@@ -56,19 +56,27 @@ export function initLifecycle(vm: Component) {
 }
 
 export function lifecycleMixin(Vue: Class<Component>) {
+  /**
+   * 页面首次渲染和后续更新的入口位置，也是patch的入口位置
+   * @param {*} vnode
+   * @param {*} hydrating
+   */
   Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
     const vm: Component = this;
+    //页面的挂载点，真实的元素
     const prevEl = vm.$el;
+    //旧虚拟节点
     const prevVnode = vm._vnode;
     const restoreActiveInstance = setActiveInstance(vm);
+    //新虚拟节点
     vm._vnode = vnode;
     // Vue.prototype.__patch__ is injected in entry points
     // based on the rendering backend used.
     if (!prevVnode) {
-      // initial render
+      // 旧`VNode`不存在，表示首次渲染，即初始化页面走这里（initial render）
       vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */);
     } else {
-      // updates
+      // 响应式数据更新时，即更新页面时走这里 (updates)
       vm.$el = vm.__patch__(prevVnode, vnode);
     }
     restoreActiveInstance();
