@@ -61,6 +61,13 @@ function sameInputType(a, b) {
   return typeA === typeB || (isTextInputType(typeA) && isTextInputType(typeB));
 }
 
+/**
+ * 得到指定范围内（beginIdx --> endIdx）,节点的key和索引的映射关系 ==> {key1:index1,key2:index2,.....}
+ * @param {*} children
+ * @param {*} beginIdx
+ * @param {*} endIdx
+ * @returns
+ */
 function createKeyToOldIdx(children, beginIdx, endIdx) {
   let i, key;
   const map = {};
@@ -337,11 +344,19 @@ export function createPatchFunction(backend) {
     }
   }
 
+  /**
+   * 创建所有子节点，并将子节点插入父节点，形成一颗 DOM 树
+   * @param {*} vnode
+   * @param {*} children
+   * @param {*} insertedVnodeQueue
+   */
   function createChildren(vnode, children, insertedVnodeQueue) {
     if (Array.isArray(children)) {
       if (process.env.NODE_ENV !== "production") {
+        // 判断 vnode.key 是否有重复
         checkDuplicateKeys(children);
       }
+      // 遍历这组节点，依次创建这些节点并插入到父节点，形成一颗 DOM 树
       for (let i = 0; i < children.length; ++i) {
         createElm(
           children[i],
@@ -354,6 +369,7 @@ export function createPatchFunction(backend) {
         );
       }
     } else if (isPrimitive(vnode.text)) {
+      // 说明是文本节点，创建文本节点，并插入到父节点
       nodeOps.appendChild(
         vnode.elm,
         nodeOps.createTextNode(String(vnode.text))
@@ -368,17 +384,26 @@ export function createPatchFunction(backend) {
     return isDef(vnode.tag);
   }
 
+  /**
+   * 调用各个模块的 create 方法，比如：创建属性的，创建样式的，指令的等等。
+   * @param {*} vnode
+   * @param {*} insertedVnodeQueue
+   */
   function invokeCreateHooks(vnode, insertedVnodeQueue) {
     for (let i = 0; i < cbs.create.length; ++i) {
       cbs.create[i](emptyNode, vnode);
     }
+    // 组件钩子
     i = vnode.data.hook; // Reuse variable
     if (isDef(i)) {
+      // 如果组件有 create 钩子
       if (isDef(i.create)) i.create(emptyNode, vnode);
+      // 如果组件有定义 insert钩子
       if (isDef(i.insert)) insertedVnodeQueue.push(vnode);
     }
   }
 
+  // 为组件的`CSS`设置 scopedId
   // set scope id attribute for scoped CSS.
   // this is implemented as a special case to avoid the overhead
   // of going through the normal attribute patching process.
@@ -406,6 +431,15 @@ export function createPatchFunction(backend) {
     }
   }
 
+  /**
+   * 在指定范围（startIdx --> endIdx）内添加节点
+   * @param {*} parentElm
+   * @param {*} refElm
+   * @param {*} vnodes
+   * @param {*} startIdx
+   * @param {*} endIdx
+   * @param {*} insertedVnodeQueue
+   */
   function addVnodes(
     parentElm,
     refElm,
@@ -675,6 +709,10 @@ export function createPatchFunction(backend) {
     }
   }
 
+  /**
+   * 检查一组元素的`key`是否重复
+   * @param {*} children vnode.children 子节点数组
+   */
   function checkDuplicateKeys(children) {
     const seenKeys = {};
     for (let i = 0; i < children.length; i++) {
@@ -693,6 +731,10 @@ export function createPatchFunction(backend) {
     }
   }
 
+  /**
+   * 找到新节点vnode在 oldChildren 中的位置索引
+   * 如果新vnode,不存在key，用这个方法寻找在旧oldChildren中的索引
+   */
   function findIdxInOld(node, oldCh, start, end) {
     for (let i = start; i < end; i++) {
       const c = oldCh[i];
