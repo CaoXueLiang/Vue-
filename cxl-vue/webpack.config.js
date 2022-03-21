@@ -18,7 +18,6 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       title: "手写Vue1.x",
-      template: "./public/index.html",
     }),
   ],
 };
