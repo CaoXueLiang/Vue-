@@ -1,4 +1,4 @@
-import { def } from "../utils/utils";
+import { def } from "../utils/utils.js";
 const arrayProto = Array.prototype;
 // 以`arrayProto`为原型创建一个新对象
 export const arrayMethods = Object.create(arrayProto);

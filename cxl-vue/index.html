@@ -39,44 +39,79 @@
       </div>
     </div>
 
-    <script src="./dist/bundle.js"></script>
-    <script>
-      installMethod();
-
-      function installMethod() {
-        const ins = new Vue({
-          el: "#app",
-          data() {
-            return {
-              // 原始值和对象的响应式原理
-              t: "t value",
-              t1: {
-                tt1: "tt1 value",
-              },
-              // 数组的响应式原理
-              arr: [1, 2, 3],
-              // 响应式更新
-              counter: 0,
-              // v-bind
-              title: "看我",
-              // v-model
-              inputVal: "test",
-              isChecked: true,
-              selectValue: 2,
-            };
-          },
-          methods: {
-            handleAdd() {
-              this.counter++;
+    <script type="module">
+      import Vue from "./src/index.js";
+      const ins = new Vue({
+        el: "#app",
+        data() {
+          return {
+            // 原始值和对象的响应式原理
+            t: "t value",
+            t1: {
+              tt1: "tt1 value",
             },
-            handleMinus() {
-              this.counter--;
-            },
+            // 数组的响应式原理
+            arr: [1, 2, 3],
+            // 响应式更新
+            counter: 0,
+            // v-bind
+            title: "看我",
+            // v-model
+            inputVal: "test",
+            isChecked: true,
+            selectValue: 2,
+          };
+        },
+        methods: {
+          handleAdd() {
+            this.counter++;
           },
-        });
+          handleMinus() {
+            this.counter--;
+          },
+        },
+      });
 
-        console.log("--vm--", ins);
-      }
+      console.log("--vm--", ins);
+      // 数据响应式拦截
+      setTimeout(() => {
+        console.log(
+          "********** 属性值为原始值时的 getter、setter ************"
+        );
+        console.log(ins.t);
+        ins.t = "change t value";
+        console.log(ins.t);
+      }, 1000);
+
+      setTimeout(() => {
+        console.log("********** 属性的新值为对象的情况 ************");
+        ins.t = {
+          tt: "tt value",
+        };
+        console.log(ins.t.tt);
+      }, 2000);
+
+      setTimeout(() => {
+        console.log(
+          "********** 验证对深层属性的 getter、setter 拦截 ************"
+        );
+        ins.t1.tt1 = "change tt1 value";
+        console.log(ins.t1.tt1);
+      }, 3000);
+
+      setTimeout(() => {
+        console.log("********** 将值为对象的属性更新为原始值 ************");
+        console.log(ins.t1);
+        ins.t1 = "t1 value";
+        console.log(ins.t1);
+      }, 4000);
+
+      setTimeout(() => {
+        console.log("********** 数组操作方法的拦截 ************");
+        console.log(ins.arr);
+        ins.arr.push(4);
+        console.log(ins.arr);
+      }, 5000);
     </script>
   </body>
 </html>

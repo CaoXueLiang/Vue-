@@ -1,4 +1,5 @@
-import { arrayMethods } from "./array";
+import { arrayMethods } from "./array.js";
+import { def } from "../utils/utils.js";
 
 // 通过 observe为对象设置响应式
 export function observe(value) {
@@ -21,12 +22,7 @@ export function observe(value) {
  */
 class Observer {
   constructor(value) {
-    Object.defineProperty(value, "__ob__", {
-      enumerable: false,
-      configurable: true,
-      writable: true,
-      value: this,
-    });
+    def(value, "__ob__", this);
     if (Array.isArray(value)) {
       //判断是否是数组
       value.__proto__ = arrayMethods;
@@ -61,12 +57,12 @@ function defineReactive(obj, key, val) {
   // 递归调用 observe,处理 val 仍未对象的情况
   observe(val);
   Object.defineProperty(obj, key, {
-    configurable: true,
-    writable: true,
     get() {
+      console.log(`-------------getter: key = ${key}`);
       return val;
     },
     set(newVal) {
+      console.log(`------------setter: ${key} = ${newVal}`);
       if (val === newVal) {
         return;
       }

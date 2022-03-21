@@ -1,5 +1,5 @@
-import proxy from "./utils/proxy";
-import { observe } from "./observer/index";
+import proxy from "./utils/proxy.js";
+import { observe } from "./observer/index.js";
 export default function initData(vm) {
   let { data } = vm.$options;
   if (!data) {
@@ -11,7 +11,6 @@ export default function initData(vm) {
   for (const key in vm._data) {
     proxy(vm, "_data", key);
   }
-  console.log("==========================");
   // 设置响应式
   observe(vm._data);
 }
