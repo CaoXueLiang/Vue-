@@ -1,5 +1,6 @@
 import { arrayMethods } from "./array.js";
 import { def } from "../utils/utils.js";
+import Dep from "./dep.js";
 
 // 通过 observe为对象设置响应式
 export function observe(value) {
@@ -22,6 +23,8 @@ export function observe(value) {
  */
 class Observer {
   constructor(value) {
+    // 为 Observer 实例，设置一个Dep,方便在更新对象本身时使用，比如：数组通知依赖更新时就会用到
+    this.dep = new Dep();
     def(value, "__ob__", this);
     if (Array.isArray(value)) {
       //判断是否是数组
@@ -55,20 +58,28 @@ class Observer {
  */
 function defineReactive(obj, key, val) {
   // 递归调用 observe,处理 val 仍未对象的情况
-  observe(val);
+  const childOb = observe(val);
+  // 为对象属性上设置 Dep
+  const dep = new Dep();
   Object.defineProperty(obj, key, {
     get() {
-      console.log(`-------------getter: key = ${key}`);
+      if (Dep.target) {
+        dep.depend();
+        if (childOb) {
+          childOb.dep.depend();
+        }
+      }
       return val;
     },
     set(newVal) {
-      console.log(`------------setter: ${key} = ${newVal}`);
       if (val === newVal) {
         return;
       }
       val = newVal;
       // 对新值进行响应式处理，这里针对的是新值为非原始值的情况，比如：val为数组和对象
       observe(val);
+      // dep 发送通知
+      dep.notify();
     },
   });
 }

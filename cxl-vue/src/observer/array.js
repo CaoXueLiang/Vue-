@@ -25,7 +25,10 @@ methodToPatch.forEach(function (method) {
     } else if (method === "splice") {
       inserted = args.splice(2);
     }
+    // 如果有新增元素，则对新增的元素也进行响应式处理
     ob.observeArray(inserted);
+    // 发送通知
+    ob.dep.notify();
     return result;
   });
 });
