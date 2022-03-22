@@ -7,6 +7,7 @@ import Watcher from "../observer/watcher.js";
  */
 export default function compileAttribute(node, vm) {
   const attrs = Array.from(node.attributes);
+  console.log(attrs);
   // 遍历属性数组
   for (const attr of attrs) {
     const { name, value } = attr;
