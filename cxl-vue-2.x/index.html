@@ -15,6 +15,12 @@
       <h3>methods + 事件 + 数据响应式更新 原理</h3>
       <div>
         <p>{{ counter }}</p>
+        <div>{{nextCounter}}</div>
+        <div>{{nextCounter}}</div>
+        <div>{{nextCounter}}</div>
+        <div>{{nextCounter}}</div>
+        <div>{{nextCounter}}</div>
+        <div>{{nextCounter}}</div>
         <button v-on:click="handleAdd">Add</button>
         <button v-on:click="handleMinus">Minus</button>
       </div>
@@ -61,6 +67,11 @@
             isChecked: true,
             selectValue: 2,
           };
+        },
+        computed: {
+          nextCounter() {
+            return this.counter + 1;
+          },
         },
         methods: {
           handleAdd() {
