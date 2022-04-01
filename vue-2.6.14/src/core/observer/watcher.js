@@ -96,6 +96,7 @@ export default class Watcher {
 
   /**
    * 执行 this.getter,并重新收集依赖
+   * this.getter 是实例化`watcher`时传递的第二个参数，一个函数或者字符串，比如：updateComputed或者 parsePath返回的函数
    * 为什么要重新收集依赖？
    *  因为触发更新说明有响应式数据被更新了，虽然被更新的数据虽然已经经过 observe 观察了，但是却没有进行依赖收集
    *  所以，在更新页面时，会重新执行一次 render 函数，执行期间会触发读取操作，这时候进行依赖收集
@@ -105,6 +106,7 @@ export default class Watcher {
     let value;
     const vm = this.vm;
     try {
+      //执行回调函数，比如updateComputed， 进入patch阶段
       value = this.getter.call(vm, vm);
     } catch (e) {
       if (this.user) {
@@ -192,6 +194,7 @@ export default class Watcher {
         const oldValue = this.value;
         this.value = value;
         if (this.user) {
+          //如果是用户watcher,则执行用户传递的第三个参数---回调函数，参数为val和oldVal
           const info = `callback for watcher "${this.expression}"`;
           invokeWithErrorHandling(
             this.cb,
@@ -201,6 +204,7 @@ export default class Watcher {
             info
           );
         } else {
+          //渲染watcher,this.cb = noop, noop是一个空函数。
           this.cb.call(this.vm, value, oldValue);
         }
       }
