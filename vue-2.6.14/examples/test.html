@@ -11,6 +11,8 @@
       <div>{{msg}}</div>
       <div class="msg1">{{ msg }}</div>
       <div class="msg2">{{ msg }}</div>
+      <h4>-----v-for指令-----</h4>
+      <div v-for="item in info" :key="JSON.stringify(item)">{{item}}</div>
     </div>
     <script src="../../dist/vue.js"></script>
     <script>
@@ -27,6 +29,13 @@
         el: "#app",
         data: {
           msg: "test",
+          friends: ["xiaoming11", "lining", "alena222", "fangfang"],
+          info: {
+            name: "李小明",
+            age: "20岁",
+            height: "1.88m",
+            weight: "120公斤",
+          },
         },
         created() {},
         beforeMouted() {},
