@@ -760,7 +760,7 @@ export function createPatchFunction(backend) {
     index,
     removeOnly
   ) {
-    // 新旧节点相同，则直接返回
+    // 新旧节点相同，则直接返回 (内存也要相同，才是全等)
     if (oldVnode === vnode) {
       return;
     }
