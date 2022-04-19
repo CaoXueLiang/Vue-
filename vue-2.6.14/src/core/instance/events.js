@@ -159,6 +159,7 @@ export function eventsMixin(Vue: Class<Component>) {
     if (cbs) {
       cbs = cbs.length > 1 ? toArray(cbs) : cbs;
       const args = toArray(arguments, 1);
+      console.log("--argument--", arguments);
       const info = `event handler for "${event}"`;
       for (let i = 0, l = cbs.length; i < l; i++) {
         invokeWithErrorHandling(cbs[i], vm, args, vm, info);
