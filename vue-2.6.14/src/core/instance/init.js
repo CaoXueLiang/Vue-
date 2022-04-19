@@ -20,13 +20,26 @@ let uid = 0;
  * 2.初始化组件实例关系属性，比如 $parent $children $root $refs
  * 3.处理自定义事件 $on,$off,$emit,$once
  * 4.初始化渲染，解析组件的插槽信息，得到 vm.$slot，处理渲染函数，得到 vm.$createElement 方法，即 h 函数
- * 5.初始化组件的 inject 配置项，得到 ret[key] = val 形式的配置对象，然后对该配置对象进行浅层的响应式处理（只处理了对象第一层数据），并代理每个 key 到 vm 实例上
- * 6.调用 beforeCreate 钩子函数
+ * 5.调用 beforeCreate 钩子函数
+ * 6.初始化组件的 inject 配置项，得到 ret[key] = val 形式的配置对象，然后对该配置对象进行浅层的响应式处理（只处理了对象第一层数据），并代理每个 key 到 vm 实例上
  * 7.初始化数据，包括 props,data,computed,watcher,methods等选项
  * 8.解析组件配置项上的 provide 对象，将其挂载到 vm._provided 属性上
  * 9.调用 created 钩子函数
  * 10.如果配置项中有 el 属性，则调用 vm.$mount方法。进入挂载阶段
  */
+
+// Vue的初始化过程，new Vue(options)都做了什么？
+//1. 处理组件配置项信息 1.对于根组件，将vue的全局配置合并到根组件的局部配置中 2.对于子组件主要做了一些性能优化，将一些深层次的属性赋值到VM.$options上，提高执行效率
+//2. 初始化组件实例关系属性，$parent $children $root $refs
+//3. 初始化自定义事件，$on $off $once $emit
+//4. 初始化渲染，解析插槽信息得到vm.$slot 处理渲染函数得到vm.createElement 方法，即h函数
+//5. 调用 beforeCreated 钩子函数
+//6. 处理组件上的inject 配置项，得到ret[key]=val,将每个key代理到vm实例上，并进行浅层次的响应式处理
+//7. 数据响应式处理 props,methods,data,computed,watcher
+//8. 解析组件上的 provide对象，并挂载到vm._provided 属性上
+//9. 调用 created 钩子函数
+//10.判断是否有el属性，如果存在则调用vm.$mount方法进入挂载阶段
+
 export function initMixin(Vue: Class<Component>) {
   Vue.prototype._init = function (options?: Object) {
     //vue实例
@@ -81,7 +94,7 @@ export function initMixin(Vue: Class<Component>) {
     initInjections(vm);
     //初始化数据，props,data,computed,watcher,computed
     initState(vm);
-    //解析组件配置项上的 provide 对象
+    //解析组件配置项上的 provide 对象，将其挂载到 vm._provide 属性上
     initProvide(vm);
     //调用 created 钩子函数
     callHook(vm, "created");

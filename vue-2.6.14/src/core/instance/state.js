@@ -48,10 +48,10 @@ export function proxy(target: Object, sourceKey: string, key: string) {
 
 /**
  * 做了两件事：
- * 1.数据响应式入口：分别处理 props,methods,data,computed,watche
+ * 1.数据响应式入口：分别处理 props,methods,data,computed,watch
  * 2.优先级：props,method,data,computed 对象中的属性不能重复，优先级和列出的顺序一致
  */
-//props,methods,data,computed,watch
+
 /**
  * computed 和 watch 在本质是没有区别的，都是通过 watcher 去实现的响应式
  * 非要说有区别，那也只是在使用方式上的区别，简单来说
@@ -61,6 +61,7 @@ export function proxy(target: Object, sourceKey: string, key: string) {
 export function initState(vm: Component) {
   vm._watchers = [];
   const opts = vm.$options;
+  console.log("----vm.$options---", opts);
   //处理 props 对象，为props对象的每个属性设置响应式，并将其代理到 vm 实例上
   if (opts.props) initProps(vm, opts.props);
   //处理 methods 对象，校验每个属性的值是否为函数，和props属性值进行判重处理,以及vue实例上的方法判重，最后得到`vm[key] = methods[key]`
@@ -89,14 +90,18 @@ function initProps(vm: Component, propsOptions: Object) {
   const props = (vm._props = {});
   // cache prop keys so that future props updates can iterate using Array
   // instead of dynamic object key enumeration.
+  // 缓存 props 的每个key,做性能优化
   const keys = (vm.$options._propKeys = []);
   const isRoot = !vm.$parent;
   // root instance props should be converted
   if (!isRoot) {
     toggleObserving(false);
   }
+
+  // 遍历props对象中的key
   for (const key in propsOptions) {
     keys.push(key);
+    // 获取props[key]的默认值
     const value = validateProp(key, propsOptions, propsData, vm);
     /* istanbul ignore else */
     if (process.env.NODE_ENV !== "production") {
@@ -122,18 +127,26 @@ function initProps(vm: Component, propsOptions: Object) {
         }
       });
     } else {
+      // 为props的每个key设置响应式
       defineReactive(props, key, value);
     }
     // static props are already proxied on the component's prototype
     // during Vue.extend(). We only need to proxy props defined at
     // instantiation here.
     if (!(key in vm)) {
+      //将key代理到vm实例上
       proxy(vm, `_props`, key);
     }
   }
   toggleObserving(true);
 }
 
+/**
+ * 1.判重处理，data上的属性不能和props和methods对象上的属性重名
+ * 2.将data属性代理到vm实例上
+ * 3.为data数据设置响应式
+ * @param {*} vm
+ */
 function initData(vm: Component) {
   let data = vm.$options.data;
   data = vm._data = typeof data === "function" ? getData(data, vm) : data || {};
@@ -191,20 +204,31 @@ export function getData(data: Function, vm: Component): any {
 
 const computedWatcherOptions = { lazy: true };
 
+/**
+ * 1. 为`computed[key]`创建watcher实例，默认是懒执行
+ * 2. 将属性值代理到vm实例上
+ * 3. 判重处理，computed[key]属性不能和props,methods,data中的属性重名
+ * @param {*} vm
+ * @param {*} computed
+ */
 function initComputed(vm: Component, computed: Object) {
   // $flow-disable-line
   const watchers = (vm._computedWatchers = Object.create(null));
   // computed properties are just getters during SSR
+  // 是否是服务端渲染
   const isSSR = isServerRendering();
 
+  //遍历computed对象属性
   for (const key in computed) {
     const userDef = computed[key];
+    // 获取computed属性值，判断是函数还是对象 如果是对象则获取get方法
     const getter = typeof userDef === "function" ? userDef : userDef.get;
     if (process.env.NODE_ENV !== "production" && getter == null) {
       warn(`Getter is missing for computed property "${key}".`, vm);
     }
 
     if (!isSSR) {
+      // 为每个key创建watcher实例,默认是懒执行
       // create internal watcher for the computed property.
       watchers[key] = new Watcher(
         vm,
@@ -218,6 +242,7 @@ function initComputed(vm: Component, computed: Object) {
     // component prototype. We only need to define computed properties defined
     // at instantiation here.
     if (!(key in vm)) {
+      //将computed的属性代理到vm实例上
       defineComputed(vm, key, userDef);
     } else if (process.env.NODE_ENV !== "production") {
       if (key in vm.$data) {
@@ -272,8 +297,6 @@ export function defineComputed(
 
 /**
  * computed属性值会缓存的原理是：watcher.ditry, watcher.evaluate, watcher.update实现的
- *
- *
  */
 function createComputedGetter(key) {
   return function computedGetter() {
@@ -296,6 +319,12 @@ function createGetterInvoker(fn) {
   };
 }
 
+/**
+ * 校验每个属性的值是否为函数，和props属性判重处理，以及vue实例上的方法判重,避免定义以`_`和`$`开头的组件方法
+ * 设置 vm[key] = methods[key]
+ * @param {*} vm
+ * @param {*} methods
+ */
 function initMethods(vm: Component, methods: Object) {
   const props = vm.$options.props;
   for (const key in methods) {
@@ -324,6 +353,12 @@ function initMethods(vm: Component, methods: Object) {
   }
 }
 
+/**
+ * 1. 为每个key创建watcher实例，key和watcher实例可能是1对多的关系
+ * 2. 如果设置了immediate=true 则会在侦听开始之后被立即调用。如果设置了deep=true则被监听的对象的属性改变了，回调函数也会被执行，不管嵌套有多深
+ * @param {*} vm
+ * @param {*} watch
+ */
 function initWatch(vm: Component, watch: Object) {
   for (const key in watch) {
     const handler = watch[key];

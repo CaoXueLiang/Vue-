@@ -5,7 +5,7 @@
   <body>
     <div id="app">
       <button-counter
-        @hook:mounted="hookMounted"
+        propAge="25"
         @hook:created="hookCreated"
         @buttoncounter-click="buttoncounterClick"
         @click.native="nativeClicked"
@@ -15,10 +15,21 @@
       <div class="msg2">{{ msg }}</div>
       <h4>-----v-for指令-----</h4>
       <div v-for="item in items" :key="item">{{item}}</div>
+      <button @click="info.name='hhhh' ">测试watch deep属性</button>
     </div>
     <script src="../../dist/vue.js"></script>
     <script>
       Vue.component("button-counter", {
+        props: {
+          propAge: {
+            type: String,
+            default: "30",
+          },
+          propName: {
+            type: String,
+            default: "xiaoMing",
+          },
+        },
         data: function () {
           return {
             count: 0,
@@ -35,6 +46,7 @@
       var vm = new Vue({
         el: "#app",
         data: {
+          age: 20,
           msg: "test",
           friends: ["xiaoming11", "lining", "alena222", "fangfang"],
           items: ["a", "b", "c", "d", "e"],
@@ -45,10 +57,45 @@
             weight: "120公斤",
           },
         },
-        created() {},
-        beforeMouted() {},
+        computed: {
+          evaluteAge() {
+            return this.age + 10;
+          },
+          evaluteName: {
+            get() {
+              return this.name + "ceshiming";
+            },
+          },
+        },
+        // 类型：{ [key: string]: string | Function | Object | Array }
+        watch: {
+          age: "ageChanged",
+          age: function (val) {
+            console.log("----age--function--", val);
+          },
+          age: {
+            immediate: true,
+            deep: true,
+            handler: function (val) {
+              console.log("--age--object--", val);
+            },
+          },
+          age: [
+            function (val) {
+              console.log("--age--array1--", val);
+            },
+            function (val) {
+              console.log("--age--array2--", val);
+            },
+          ],
+          info: {
+            deep: true,
+            handler: function (val) {
+              console.log("--info-changed-", val);
+            },
+          },
+        },
         mounted() {
-          console.log(this);
           setTimeout(() => {
             this.items.splice(2, 0, "f");
           }, 2000);
@@ -57,14 +104,15 @@
           hookCreated() {
             // console.log("-----子组件created-----");
           },
-          hookMounted() {
-            // console.log("-----子组件mounted-----");
-          },
           buttoncounterClick(e) {
-            console.log("---e--", e);
+            // console.log("---e--", e);
           },
           nativeClicked() {
-            console.log("----nativeClick----");
+            // console.log("----nativeClick----");
+            this.age++;
+          },
+          ageChanged(val) {
+            console.log("--age---string--", val);
           },
         },
       });
