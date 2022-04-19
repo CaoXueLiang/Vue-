@@ -40,12 +40,12 @@ export default function parse(template) {
 
   /**
    * 解析开始标签
-   * 例如: <div id="app">...</div>
+   * 例如: <div id="app" class='className'>...</div>
    */
   function parseStartTag() {
     // 找到开始标签的结束位置 >
     const end = html.indexOf(">");
-    // 解析开始标签里的内容 <内容>，标签名 + 属性，比如：div id="app"
+    // 解析开始标签里的内容 <内容>，标签名 + 属性，比如：div id="app" class='className'
     const content = html.slice(1, end);
     // 截断 html，将上面解析的内容从 html 字符串中删除
     html = html.slice(end + 1);
@@ -58,7 +58,7 @@ export default function parse(template) {
       tagName = content;
       attrsStr = "";
     } else {
-      // content 剩下的内容就是属性，比如 id="app" xx==xx
+      // content 剩下的内容就是属性，比如 id="app" class='className'
       tagName = content.slice(0, firstSpaceIdx);
       attrsStr = content.slice(firstSpaceIdx + 1);
     }
@@ -95,6 +95,11 @@ export default function parse(template) {
 
   /**
    * 解析属性数组，得到一个属性和值组成的 Map 对象
+   * {
+   *  id:app,
+   *  class:'normalclass',
+   *  xx:xx
+   * }
    * @param {*} attrs [id="app",xx=xx]
    */
   function parseAttrs(attrs) {

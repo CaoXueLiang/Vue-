@@ -9,6 +9,7 @@ import generate from "./generate.js";
 export default function compileToFunction(template) {
   // 解析模板生成 AST
   const ast = parse(template);
+  console.log("-----ast------", ast);
   // 将 AST 生成渲染函数
   const render = generate(ast);
   return render;
