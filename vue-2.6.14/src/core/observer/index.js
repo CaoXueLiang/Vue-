@@ -120,6 +120,7 @@ export function observe(value: any, asRootData: ?boolean): Observer | void {
     Object.isExtensible(value) &&
     !value._isVue
   ) {
+    // 可以被监听 && 不是服务端渲染 && （数组或者对象）&& 是否可以向对象添加新属性 && 不是Vue实例
     ob = new Observer(value);
   }
   if (asRootData && ob) {

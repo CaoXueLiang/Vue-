@@ -418,24 +418,40 @@ export function stateMixin(Vue: Class<Component>) {
   Vue.prototype.$set = set;
   Vue.prototype.$delete = del;
 
+  /**
+   * 1. 兼容性处理，保证 new Watcher 时的cb为函数
+   * 2. 标识watcher为用户watcher.(options.user = true)
+   * 3. 创建watcher实例
+   * 4. 如果设置了 immediate,则立即执行一次 cb
+   * 5. 返回 unWatchFn 函数，用于解除监听
+   * @param {*} expOrFn
+   * @param {*} cb
+   * @param {*} options
+   * @returns
+   */
   Vue.prototype.$watch = function (
     expOrFn: string | Function,
     cb: any,
     options?: Object
   ): Function {
     const vm: Component = this;
+    //兼容性处理，因为用户调用 vm.$watch时 设置的 cb 可能是对象
     if (isPlainObject(cb)) {
       return createWatcher(vm, expOrFn, cb, options);
     }
     options = options || {};
+    // options.user 表示是用户 watcher。还有渲染 watcher,即 updateComponent 方法中实例化的 watcher
     options.user = true;
+    // 创建 watcher
     const watcher = new Watcher(vm, expOrFn, cb, options);
+    // 如果用户设置了 immediate = true, 则立即执行一次回调函数
     if (options.immediate) {
       const info = `callback for immediate watcher "${watcher.expression}"`;
       pushTarget();
       invokeWithErrorHandling(cb, vm, [watcher.value], vm, info);
       popTarget();
     }
+    // 返回一个 unWatchFn 函数,用于解除监听
     return function unwatchFn() {
       watcher.teardown();
     };
