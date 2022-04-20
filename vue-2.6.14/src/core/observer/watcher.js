@@ -179,6 +179,12 @@ export default class Watcher {
     }
   }
 
+  /**
+   * 由刷新队列函数 flushSchedulerQueue 调用，完成以下几件事
+   * 1. 执行实例化 watcher 传递的第二个参数，updteComponent 或者 获取 this.xx 的一个函数（parsePath 返回的函数）
+   * 2. 更新旧值为新值
+   * 3. 执行实例化 watcher 时传递的第三个参数，比如用户 watcher 的回调函数
+   */
   run() {
     if (this.active) {
       const value = this.get();
@@ -212,6 +218,7 @@ export default class Watcher {
   }
 
   /**
+   * 懒执行的 watcher 会调用该方法 （computed 实现缓存的原理）
    * Evaluate the value of the watcher.
    * This only gets called for lazy watchers.
    */
@@ -231,6 +238,7 @@ export default class Watcher {
   }
 
   /**
+   * 将 自身 从依赖列表中删除
    * Remove self from all dependencies' subscriber list.
    */
   teardown() {

@@ -70,6 +70,7 @@ export class Observer {
 
   /**
    * Observe a list of Array items.
+   * 观察数组中的每一项，数组中的item也可能是对象
    */
   observeArray(items: Array<any>) {
     for (let i = 0, l = items.length; i < l; i++) {
@@ -131,6 +132,15 @@ export function observe(value: any, asRootData: ?boolean): Observer | void {
 
 /**
  * 在对象上定义响应式属性
+ *  info: {
+            name: "李小明",
+            age: "20岁",
+            height: "1.88m",
+            weight: "120公斤",
+            friend: {
+              hoby: "swimping",
+            },
+          },
  */
 export function defineReactive(
   obj: Object,
