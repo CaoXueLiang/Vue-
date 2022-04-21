@@ -10,6 +10,12 @@ export let isUsingMicroTask = false;
 const callbacks = [];
 let pending = false;
 
+/**
+ * 做了三件事
+ * 1. 将pending设置为false
+ * 2. 清空 callbacks 数组
+ * 3. 
+ */
 function flushCallbacks() {
   pending = false;
   const copies = callbacks.slice(0);
@@ -33,7 +39,7 @@ function flushCallbacks() {
 // or even between bubbling of the same event (#6566).
 /**
  * 😊😊😊😊
- * 作用就是将 flushCallbacks 函数放入浏览器的异步任务队列中
+ * 作用很简单就是将 flushCallbacks 函数放入浏览器的异步任务队列中
  * 兼容性判断 promise.then > MutationObserver > setImmediate > setTimeout
  */
 let timerFunc;
