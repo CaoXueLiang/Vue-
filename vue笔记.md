@@ -67,11 +67,31 @@ methods VS watch
 
 ##### 四.Vue 的异步更新机制是如何实现的？
 
-​     Vue的异步更新机制的核心是利用了浏览器的异步任务队列来实现的，首选微任务队列，宏任务次之。
+ Vue的异步更新机制的核心是利用了浏览器的异步任务队列来实现的，首选微任务队列，宏任务次之。
 
-当响应式数据更新后，会触发setter 执行 `dep.notify`方法，通知dep中收集的watcher去执行update方法，watcher.update将 watcher自己放入到一个watcher队列（全局queue数组）
+当响应式数据更新后，会触发setter 执行 `dep.notify`方法，通知dep中收集的watcher去执行update方法，`watcher.update`将 watcher自己放入到一个watcher队列（全局queue数组）
 
-然后通过 nextTick 方法将一个刷新watcher队列的函数（flushSchedulerQueue）放入一个全局的callbacks数组中
+然后通过 `nextTick` 方法将一个刷新watcher队列的函数（`flushSchedulerQueue`）放入一个全局的`callbacks`数组中。
+
+如果此时浏览器的异步任务队列中没有一个叫`flushCallbacks` 的函数，则执行 timerFunc函数，将flushCallbacks函数放到异步任务队列。如果异步任务队列中已经存在`flushCallbacks`函数，等待其执行完成以后再放入下一个`flushCallbacks`函数函数。
+
+`flushCallbacks`函数负责执行callbacks数组中的所有的`flushSchedulerQueue`函数
+
+`flushSchedulerQueue`函数负责刷新watcher队列，即执行queue数组中的每一个watcher的`watcher.run`方法，从而进入更新阶段，比如执行组件更新函数`updateComponent`或者执行用户watcher的回调函数。
+
+```js
+//改变数据，通过debugger得到调用栈如下：
+reactiveSetter --> dep.notify --> watcher.update --> queueWatcher --> nextTick --> timeFunc --> flushCallbacks --> flushSchedulerQueue --> watcher.run --> watcher.get --> updateComponent --> 进入patch阶段
+```
+
+
+
+##### 五.Vue 的 nextTick API 是如何实现的？
+
+  Vue.nextTick 或者 vm.$nextTick 的原理其实很简单，就做了两件事：
+
+* 将传递的回调函数用`try catch`包裹然后放入callbacks数组
+* 执行`timerFunc`函数，将刷新`callbacks`数组的函数`flushCallbacks`放到浏览器的异步任务队列中
 
 
 

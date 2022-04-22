@@ -68,6 +68,7 @@ if (inBrowser && !isIE) {
  * 3. 遍历 watcher 队列，依次执行 watcher.before、watcher.run
  */
 function flushSchedulerQueue() {
+  // console.log("----flushSchedulerQueue---", queue);
   currentFlushTimestamp = getNow();
   //标识现在正在刷新watcher队列
   flushing = true;
@@ -177,6 +178,7 @@ function callActivatedHooks(queue) {
 export function queueWatcher(watcher: Watcher) {
   const id = watcher.id;
   // 如果 watcher 已经存在则跳过，不会重复入队
+  // ❗同一个watcher，如果watcher.id相同，则不会重复入队
   if (has[id] == null) {
     has[id] = true;
     if (!flushing) {
@@ -193,6 +195,8 @@ export function queueWatcher(watcher: Watcher) {
       queue.splice(i + 1, 0, watcher);
     }
     // queue the flush
+    // waiting 是标识 callbacks 数组中是否已经存在刷新 watcher 队列的函数了 (flushSchedulerQueue)，
+    // 也就是说，callbacks 数组中只能存在一个 flushSchedulerQueue 函数，多了没意义
     if (!waiting) {
       waiting = true;
 
