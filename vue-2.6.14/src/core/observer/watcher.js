@@ -180,7 +180,7 @@ export default class Watcher {
   }
 
   /**
-   * 由刷新队列函数 flushSchedulerQueue 调用，完成以下几件事
+   * 由 刷新队列函数 flushSchedulerQueue 调用，如果是同步 watch，则由 this.update 直接调用，完成如下几件事：
    * 1. 执行实例化 watcher 传递的第二个参数，updteComponent 或者 获取 this.xx 的一个函数（parsePath 返回的函数）
    * 2. 更新旧值为新值
    * 3. 执行实例化 watcher 时传递的第三个参数，比如用户 watcher 的回调函数

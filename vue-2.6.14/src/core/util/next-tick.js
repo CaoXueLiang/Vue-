@@ -14,9 +14,10 @@ let pending = false;
  * 做了三件事
  * 1. 将pending设置为false
  * 2. 清空 callbacks 数组
- * 3. 
+ * 3. 执行 callbacks 数组中的每一个函数 （比如：flushSchedulerQueue 、用户调用 nextTick 传递的回调函数）
  */
 function flushCallbacks() {
+  // 将pending设置为false，表示下一个flushCallbacks可以进入浏览器的异步任务队列了
   pending = false;
   const copies = callbacks.slice(0);
   callbacks.length = 0;

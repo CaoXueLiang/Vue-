@@ -65,7 +65,13 @@ methods VS watch
 
 
 
+##### 四.Vue 的异步更新机制是如何实现的？
 
+​     Vue的异步更新机制的核心是利用了浏览器的异步任务队列来实现的，首选微任务队列，宏任务次之。
+
+当响应式数据更新后，会触发setter 执行 `dep.notify`方法，通知dep中收集的watcher去执行update方法，watcher.update将 watcher自己放入到一个watcher队列（全局queue数组）
+
+然后通过 nextTick 方法将一个刷新watcher队列的函数（flushSchedulerQueue）放入一个全局的callbacks数组中
 
 
 

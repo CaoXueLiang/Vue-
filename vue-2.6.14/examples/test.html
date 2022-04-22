@@ -16,6 +16,7 @@
       <h4>-----v-for指令-----</h4>
       <div v-for="item in items" :key="item">{{item}}</div>
       <button @click="info.name='hhhh' ">测试watch deep属性</button>
+      <button @click="msg = 'new message' ">更新</button>
     </div>
     <script src="../../dist/vue.js"></script>
     <script>
