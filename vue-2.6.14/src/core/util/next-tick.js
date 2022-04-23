@@ -102,6 +102,7 @@ if (typeof Promise !== "undefined" && isNative(Promise)) {
 /**
  * 主要做了两件事：
  * 一、将刷新watcher队列的函数，放到callbacks数组
+ *     (注意：⚠️ callbacks数组中存放的回调函数：①可能是刷新watcher队列的函数 flushSchedulerQueue ②用户调用vm.$nextTick传递的回调函数)
  * 二、将刷新callbacks数组的方法放到浏览器的异步任务队列
  *
  * 如果pending为false，表示现在浏览器的异步任务队列中没有 flushCallbacks 函数
@@ -112,6 +113,7 @@ if (typeof Promise !== "undefined" && isNative(Promise)) {
  */
 export function nextTick(cb?: Function, ctx?: Object) {
   let _resolve;
+  console.log("---nextick-", cb);
   callbacks.push(() => {
     if (cb) {
       try {

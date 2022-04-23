@@ -10,7 +10,7 @@
         @buttoncounter-click="buttoncounterClick"
         @click.native="nativeClicked"
       ></button-counter>
-      <div>{{age}}</div>
+      <div id="ageElement">{{age}}</div>
       <div>{{msg}}</div>
       <div class="msg1">{{ msg }}</div>
       <div class="msg2">{{ msg }}</div>
@@ -62,48 +62,48 @@
             },
           },
         },
-        // computed: {
-        //   evaluteAge() {
-        //     return this.age + 10;
-        //   },
-        //   evaluteName: {
-        //     get() {
-        //       return this.name + "ceshiming";
-        //     },
-        //   },
-        // },
+        computed: {
+          evaluteAge() {
+            return this.age + 10;
+          },
+          evaluteName: {
+            get() {
+              return this.name + "ceshiming";
+            },
+          },
+        },
         // 类型：{ [key: string]: string | Function | Object | Array }
-        // watch: {
-        //   age: "ageChanged",
-        //   age: function (val) {
-        //     console.log("----age--function--", val);
-        //   },
-        //   age: {
-        //     immediate: true,
-        //     deep: true,
-        //     handler: function (val) {
-        //       console.log("--age--object--", val);
-        //     },
-        //   },
-        //   age: [
-        //     function (val) {
-        //       console.log("--age--array1--", val);
-        //     },
-        //     function (val) {
-        //       console.log("--age--array2--", val);
-        //     },
-        //   ],
-        //   info: {
-        //     deep: true,
-        //     handler: function (val) {
-        //       console.log("--info-changed-", val);
-        //     },
-        //   },
-        // },
+        watch: {
+          age: "ageChanged",
+          age: function (val) {
+            console.log("----age--function--", val);
+          },
+          age: {
+            immediate: true,
+            deep: true,
+            handler: function (val) {
+              console.log("--age--object--", val);
+            },
+          },
+          age: [
+            function (val) {
+              console.log("--age--array1--", val);
+            },
+            function (val) {
+              console.log("--age--array2--", val);
+            },
+          ],
+          info: {
+            deep: true,
+            handler: function (val) {
+              console.log("--info-changed-", val);
+            },
+          },
+        },
         mounted() {
-          setTimeout(() => {
-            this.items.splice(2, 0, "f");
-          }, 2000);
+          // setTimeout(() => {
+          //   this.items.splice(2, 0, "f");
+          // }, 2000);
         },
         methods: {
           hookCreated() {
@@ -120,8 +120,13 @@
             console.log("--age---string--", val);
           },
           updateMethod() {
-            this.msg = "new message";
-            this.age = 30;
+            // this.msg = "new message";
+            this.age = 40;
+            let htmlElement = document.getElementById("ageElement");
+            this.$nextTick(() => {
+              console.log("----nextTick---", htmlElement.outerHTML);
+            });
+            console.log("------", htmlElement.outerHTML);
           },
         },
       });

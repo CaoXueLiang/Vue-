@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head> </head>
+
+  <body>
+    <div id="app">
+      <div id="ageElement">{{age}}</div>
+      <div>{{msg}}</div>
+      <div class="msg1">{{ msg }}</div>
+      <button @click="info.name='hhhh' ">测试watch deep属性</button>
+      <button @click="updateMethod">更新</button>
+    </div>
+    <script src="../../dist/vue.js"></script>
+    <script>
+      var vm = new Vue({
+        el: "#app",
+        data: {
+          age: 20,
+          msg: "test",
+          friends: ["xiaoming11", "lining", "alena222", "fangfang"],
+          items: ["a", "b", "c", "d", "e"],
+          info: {
+            name: "李小明",
+            age: "20岁",
+            height: "1.88m",
+            weight: "120公斤",
+            friend: {
+              hoby: "swimping",
+            },
+          },
+        },
+        // computed: {
+        //   evaluteAge() {
+        //     return this.age + 10;
+        //   },
+        // },
+        // watch: {
+        //   age: "ageChanged",
+        //   age: function (val) {
+        //     console.log("----age--function--", val);
+        //   },
+        // },
+        created() {
+          // 放到的是浏览器的微任务队列，所以当 `mountComponent` 执行完成之后才会走这个方法
+          this.$nextTick(() => {
+            console.log(
+              "----create中的nextTick---",
+              document.getElementById("ageElement")
+            );
+          });
+        },
+        mounted() {
+          console.log("---mounted挂载完成---");
+        },
+        methods: {
+          updateMethod() {
+            // this.msg = "new message";
+            this.age = 40;
+            let htmlElement = document.getElementById("ageElement");
+            this.$nextTick(() => {
+              console.log("----nextTick---", htmlElement.outerHTML);
+            });
+            console.log("------", htmlElement.outerHTML);
+          },
+        },
+      });
+    </script>
+  </body>
+</html>

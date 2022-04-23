@@ -200,6 +200,7 @@ export default class Watcher {
         const oldValue = this.value;
         this.value = value;
         if (this.user) {
+          debugger;
           //如果是用户watcher,则执行用户传递的第三个参数---回调函数，参数为val和oldVal
           const info = `callback for watcher "${this.expression}"`;
           invokeWithErrorHandling(
