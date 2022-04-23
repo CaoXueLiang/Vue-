@@ -18,7 +18,8 @@ export function initUse(Vue: GlobalAPI) {
     if (installedPlugins.indexOf(plugin) > -1) {
       return this;
     }
-
+    // 额外的参数. this代表的是Vue的构造函数。
+    // 将Vue的构造函数放到第一个参数位置，然后将这些参数传递给install方法
     // additional parameters
     const args = toArray(arguments, 1);
     args.unshift(this);

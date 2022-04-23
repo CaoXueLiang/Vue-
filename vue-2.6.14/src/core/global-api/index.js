@@ -20,6 +20,7 @@ import {
 
 export function initGlobalAPI(Vue: GlobalAPI) {
   // config
+  // Vue的众多默认配置项
   const configDef = {};
   configDef.get = () => config;
   if (process.env.NODE_ENV !== "production") {
@@ -34,23 +35,31 @@ export function initGlobalAPI(Vue: GlobalAPI) {
   // exposed util methods.
   // NOTE: these are not considered part of the public API - avoid relying on
   // them unless you are aware of the risk.
+  // 暴露 util 方法。这些不是 public API 避免使用他们除非你知道风险
   Vue.util = {
+    // 警告日志
     warn,
+    // 类似选项合并
     extend,
+    // 合并选项
     mergeOptions,
+    // 设置响应式
     defineReactive,
   };
 
+  // Vue.set / delete / nextTick
   Vue.set = set;
   Vue.delete = del;
   Vue.nextTick = nextTick;
 
+  // 响应式方法
   // 2.6 explicit observable API
   Vue.observable = <T>(obj: T): T => {
     observe(obj);
     return obj;
   };
 
+  // Vue.options.component / directive / filter
   Vue.options = Object.create(null);
   ASSET_TYPES.forEach((type) => {
     Vue.options[type + "s"] = Object.create(null);

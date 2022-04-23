@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head> </head>
+
+  <body>
+    <div id="app">
+      <div id="ageElement">{{age}}</div>
+      <div>{{msg}}</div>
+    </div>
+    <script src="../../dist/vue.js"></script>
+    <script>
+      // 1.Vue.use
+      // useMethod()
+      function useMethod() {
+        const myPlugin = {
+          install: function () {
+            console.log("---myPlugin--install---");
+          },
+        };
+        Vue.use(myPlugin);
+      }
+
+      // 2.Vue.mixin
+      // mixinMethod();
+      function mixinMethod() {
+        Vue.mixin({ customeOptions: { name: "custome" } });
+        console.log("---mixin--", Vue.options);
+      }
+
+      var vm = new Vue({
+        el: "#app",
+        data: {
+          age: 20,
+          msg: "test",
+        },
+        created() {},
+        mounted() {},
+        methods: {},
+      });
+    </script>
+  </body>
+</html>
