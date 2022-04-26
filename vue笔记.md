@@ -103,6 +103,8 @@ reactiveSetter --> dep.notify --> watcher.update --> queueWatcher --> nextTick -
 * 首先判断该插件是否已经安装过，如果安装过则直接返回
 * 如果没有，则执行插件提供的`install`方法安装插件，具体做什么由插件自己决定
 
+
+
 ##### 七.Vue.mixin(options) 做了什么？
 
 负责在Vue的全局配置上合并options配置。
@@ -110,6 +112,8 @@ reactiveSetter --> dep.notify --> watcher.update --> queueWatcher --> nextTick -
 * 标准化 `options` 对象上的 `props`、`inject`、`directive` 选项的格式
 * 处理 options 上的`extends` 和 `mixins`，分别将他们合并到全局配置上
 * 然后将 options 配置和全局配置进行合并，选型冲突时 options 配置会覆盖全局配置
+
+
 
 ##### 八.Vue.component(compName, Comp) 做了什么？
 
@@ -121,6 +125,8 @@ reactiveSetter --> dep.notify --> watcher.update --> queueWatcher --> nextTick -
 * 如果 Comp 是组件配置对象，则使用`Vue.extend` 方法得到组件构造函数，否则直接进行下一步
 * 在全局配置项上设置组件信息，`this.options.components.compName` = 组件构造函数
 
+
+
 ##### 九.Vue.directive('my-directive', {xx}) 做了什么？
 
 在全局注册自定义指令，然后在每个子组件生成vnode时会将全局的`directives`选项合并到局部的`directives`选项中。原理同Vue.component方法：
@@ -131,7 +137,67 @@ reactiveSetter --> dep.notify --> watcher.update --> queueWatcher --> nextTick -
 
 
 
+##### 10.Vue.filter('my-filter',function(val){xxx})做了什么？
 
+负责在全局注册过滤器，然后在每个子组件生成vnode时将全局的`filters`选项合并到局部的`filters`选项中。原理是：
+
+* 如果没有提供第二个参数，则获取my-filter过滤器的回调函数
+* 如果提供了第二个参数，则设置``this.options.filters['my-filter'] = function(val) {xxx}``
+
+
+
+##### 11.Vue.extend(options) 做了什么？
+
+`Vue.extend`基于Vue创建一个子类, 参数 options 会作为该子类的默认全局配置，就像Vue的默认全局配置一样。
+
+所以通过`Vue.extend`扩展一个子类，一大用处就是内置一些公共配置，供子类的子类使用。
+
+* 定义子类构造函数，这里和Vue构造函数一样，也是调用``_init(options)``
+* 合并Vue配置项和options，如果选项冲突，则options的选项会覆盖Vue的配置项
+* 给子类定义全局API，值为Vue的全局API，比如 Sub.extend = Super.extend, 这样子类同样可以扩展出其他子类
+* 返回子类 Sub
+
+
+
+##### 12.Vue.set(target, key, val) 做了什么?
+
+通过Vue.set为响应式对象添加一个property,可以确保这个新的property同样是响应式的，且触发视图更新。
+
+* 更新数组下标的元素：Vue.set(array,idx,val)，内部通过splice方法实现响应式更新
+* 更新对象已有属性：Vue.set(obj,key,val)，直接更新即可 => obj[key]=val
+* 不能向Vue实例或其根$data上动态的添加响应式属性
+* Vue.set(obj,key,val) 如果obj不是响应式对象，会执行obj[key]=val，但是不会做响应式处理
+* Vue.set(obj,key,val) 为响应式对象obj增加一个新的key, 则通过defineReactive 方法设置响应式，并触发依赖更新
+
+
+
+##### 13.Vue.delete(target, key) 做了什么？
+
+* 如果target为数组，则通过splice方法删除指定下标的元素
+* 如果target为对象，则通过 `delete target[key]` 方法删除对象上的元素，并通过 `ob.dep.notifity`触发依赖更新
+
+
+
+##### 14.Vue.nextTick(cb) 做了什么？
+
+Vue.nextTick函数的作用是延迟回调函数cb的执行，一般用于 this.key = newVal 更新数据后，想立即获取更新后的Dom数据。
+
+```javascript
+this.key = newVal;
+Vue.nextTick(()={
+  // 在这里获取更新后的Dom
+})
+```
+
+其内部执行过程是：
+
+* 数据发生改变后，触发setter执行``dep.notifity()``。dep通知收集的所有watcher执行``watcher.update`方法，将watcher放到watcher队列
+* 将刷新watcher队列的函数 `flushSchedulerQuene` 放到callbacks数组中
+* 将刷新callbacks数组的函数 `flushCallbacks` 放到浏览器的异步任务队列
+* **``Vue.nextTick(cb)``** 来插队，将cb函数放到callbacks数组
+* 待将来某个是个执行刷新callbacks数组的函数
+* 然后执行callbacks数组中的众多函数，触发watcher.run的执行，更新Dom
+* 由于cb函数是在后面放到callbacks数组的，所以这就保证了先更新完DOM，在执行cb函数
 
 
 
