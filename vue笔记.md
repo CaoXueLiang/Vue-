@@ -91,13 +91,43 @@ reactiveSetter --> dep.notify --> watcher.update --> queueWatcher --> nextTick -
   Vue.nextTick 或者 vm.$nextTick 的原理其实很简单，就做了两件事：
 
 * 将传递的回调函数用`try catch`包裹然后放入callbacks数组
+
 * 执行`timerFunc`函数，将刷新`callbacks`数组的函数`flushCallbacks`放到浏览器的异步任务队列中
 
+  
 
+##### 六.Vue.use(plugin) 做了什么？
 
+负责安装plugin插件，其实就是执行插件提供的`install`方法。
 
+* 首先判断该插件是否已经安装过，如果安装过则直接返回
+* 如果没有，则执行插件提供的`install`方法安装插件，具体做什么由插件自己决定
 
+##### 七.Vue.mixin(options) 做了什么？
 
+负责在Vue的全局配置上合并options配置。
+
+* 标准化 `options` 对象上的 `props`、`inject`、`directive` 选项的格式
+* 处理 options 上的`extends` 和 `mixins`，分别将他们合并到全局配置上
+* 然后将 options 配置和全局配置进行合并，选型冲突时 options 配置会覆盖全局配置
+
+##### 八.Vue.component(compName, Comp) 做了什么？
+
+负责注册全局组件。其实就是将组件配置注册到全局配置的 components 选项上（this.options.components）,
+
+然后各个子组件在生成vnode时会将全局的components选项合并到局部的components配置项上。
+
+* 如果第二个参数为空，则表示获取 compName的组件构造函数
+* 如果 Comp 是组件配置对象，则使用`Vue.extend` 方法得到组件构造函数，否则直接进行下一步
+* 在全局配置项上设置组件信息，`this.options.components.compName` = 组件构造函数
+
+##### 九.Vue.directive('my-directive', {xx}) 做了什么？
+
+在全局注册自定义指令，然后在每个子组件生成vnode时会将全局的`directives`选项合并到局部的`directives`选项中。原理同Vue.component方法：
+
+* 如果第二个参数为空，则获取指定指令的配置对象
+* 如果不为空，如果第二个参数是一个函数的话，则生成配置对象 `{bind:第二个参数，update:第二个参数}`
+* 然后将指令配置对象设置到全局配置上，`this.options.directives['my-directive'] = {xx}`
 
 
 

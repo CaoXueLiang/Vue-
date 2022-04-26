@@ -199,7 +199,6 @@ export function mountComponent(
     };
   } else {
     updateComponent = () => {
-      // debugger;
       // 执行 vm._update函数，得到虚拟DOM，并将`vnode`传递给_update函数。接下来就到`patch`阶段了。
       vm._update(vm._render(), hydrating);
     };
