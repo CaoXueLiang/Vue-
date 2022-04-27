@@ -13,10 +13,22 @@ function Vue(options) {
   this._init(options);
 }
 
+// 定义 Vue.prototype._init 方法
 initMixin(Vue);
+// 定义：Vue.prototype.$data, $props, $set, $delete, $watch
 stateMixin(Vue);
+// 定义事件相关方法
+// $on, $off, $once, $emit
 eventsMixin(Vue);
+// 定义:
+// Vue.prototype._update | Vue.prototype.$forceUpdate | Vue.prototype.$destroy
 lifecycleMixin(Vue);
+/**
+ * 执行 installRenderHelpers，在 Vue.prototype 对象上安装运行时便利程序
+ * 定义：
+ * Vue.prototype.$nextTick
+ * Vue.prototype._render
+ */
 renderMixin(Vue);
 
 export default Vue;

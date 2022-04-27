@@ -141,6 +141,7 @@ export function eventsMixin(Vue: Class<Component>) {
     const vm: Component = this;
     if (process.env.NODE_ENV !== "production") {
       const lowerCaseEvent = event.toLowerCase();
+      // 意思是说，HTML 属性不区分大小写，所以你不能使用 v-on 监听小驼峰形式的事件名（eventName），而应该使用连字符形式的事件名（event-name)
       if (lowerCaseEvent !== event && vm._events[lowerCaseEvent]) {
         tip(
           `Event "${lowerCaseEvent}" is emitted in component ` +
