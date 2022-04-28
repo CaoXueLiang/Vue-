@@ -96,6 +96,10 @@ export function lifecycleMixin(Vue: Class<Component>) {
     // updated in a parent's updated hook.
   };
 
+  /**
+   * 直接调用 watcher.update 方法,迫使组件重新渲染。
+   * 它仅仅影响实例本身和插入插槽内容的子组件，而不是所有子组件
+   */
   Vue.prototype.$forceUpdate = function () {
     const vm: Component = this;
     if (vm._watcher) {
@@ -103,18 +107,29 @@ export function lifecycleMixin(Vue: Class<Component>) {
     }
   };
 
+  /**
+   * 完全销毁一个实例。
+   * 1.清理它与其他实例的连接，将其从父组件的children中移除
+   * 2.移除依赖监听
+   * 3.调用__patch__，销毁节点
+   * 3.关闭实例的所有事件监听
+   */
   Vue.prototype.$destroy = function () {
     const vm: Component = this;
     if (vm._isBeingDestroyed) {
+      // 表示实例已经销毁
       return;
     }
+    // 调用 beforeDestroy 钩子函数
     callHook(vm, "beforeDestroy");
     vm._isBeingDestroyed = true;
     // remove self from parent
+    // 把自己从父组件的children中移除
     const parent = vm.$parent;
     if (parent && !parent._isBeingDestroyed && !vm.$options.abstract) {
       remove(parent.$children, vm);
     }
+    // 移除依赖监听
     // teardown watchers
     if (vm._watcher) {
       vm._watcher.teardown();
