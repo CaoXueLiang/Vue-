@@ -40,7 +40,6 @@ export function initAssetRegisters(Vue: GlobalAPI) {
         }
         // this.options.components[id] = definition
         this.options[type + "s"][id] = definition;
-        debugger;
         return definition;
       }
     };

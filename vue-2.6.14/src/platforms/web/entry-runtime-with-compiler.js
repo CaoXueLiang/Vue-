@@ -21,6 +21,7 @@ const mount = Vue.prototype.$mount;
 /**
  * 编译器的入口
  * 就做了一件事，得到组件的渲染函数，将其设置到`this.$options`上
+ * 运行时的 Vue.js 包就没有这部分的代码，通过打包器结合 vue-loader + vue-template-compiler 进行预编译，将模板编译成 render 函数
  */
 Vue.prototype.$mount = function (
   el?: string | Element,
@@ -85,10 +86,13 @@ Vue.prototype.$mount = function (
       const { render, staticRenderFns } = compileToFunctions(
         template,
         {
+          //在非生产环境下，编译时记录标签属性在模板字符串中开始和结束的位置索引
           outputSourceRange: process.env.NODE_ENV !== "production",
           shouldDecodeNewlines,
           shouldDecodeNewlinesForHref,
+          //界定符，默认是{{}}
           delimiters: options.delimiters,
+          //是否保留注释
           comments: options.comments,
         },
         this

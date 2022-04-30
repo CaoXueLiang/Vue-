@@ -37,7 +37,7 @@
 
 `每个组件实例都对应一个 **watcher** 实例，它会在组件渲染的过程中把“接触”过的数据 property 记录为依赖。之后当依赖项的 setter 触发时，会通知 watcher，从而使它关联的组件重新渲染。`
 
-![Snipaste_1123r](C:\Users\caoxu\Downloads\Snipaste_1123r.png)
+![Snipaste_1123r](https://s3.bmp.ovh/imgs/2022/04/29/9a8c34bf31bd139c.png)
 
 
 
@@ -132,10 +132,12 @@ reactiveSetter --> dep.notify --> watcher.update --> queueWatcher --> nextTick -
 在全局注册自定义指令，然后在每个子组件生成vnode时会将全局的`directives`选项合并到局部的`directives`选项中。原理同Vue.component方法：
 
 * 如果第二个参数为空，则获取指定指令的配置对象
+
 * 如果不为空，如果第二个参数是一个函数的话，则生成配置对象 `{bind:第二个参数，update:第二个参数}`
+
 * 然后将指令配置对象设置到全局配置上，`this.options.directives['my-directive'] = {xx}`
 
-
+  
 
 ##### 10.Vue.filter('my-filter',function(val){xxx})做了什么？
 
@@ -198,6 +200,86 @@ Vue.nextTick(()={
 * 待将来某个是个执行刷新callbacks数组的函数
 * 然后执行callbacks数组中的众多函数，触发watcher.run的执行，更新Dom
 * 由于cb函数是在后面放到callbacks数组的，所以这就保证了先更新完DOM，在执行cb函数
+
+
+
+##### 15.什么是 Hook Event？
+
+`Hook Event` 是Vue的自定义事件结合生命周期钩子函数实现的一种从组件外部为组件注入额外生命周期方法的功能。
+
+
+
+##### 16.Hook Event 是如果实现的？
+
+```javascript
+ <my-button @hook:mounted="hootMounted" @hook:created="hootCreated" />
+```
+
+* 处理自定义事件的时候（`vm.$on`) 如果发现组件有 `hook:xx` 格式的事件（xx为Vue的生命周期函数），则将`vm._hasHookEvent` 设置为 true，表示该组件上有 HookEvent
+* 在组件生命周期方法被触发的时候，内部会通过`callHook`方法来执行这些生命周期函数，在生命周期函数执行之后，如果发现 `vm._hasHookEvent为true`，则表示当前组件有HookEvent，通过`vm.$emit('hook:xx')`触发Hook Event的执行
+
+这就是**HookEvent** 的实现原理。
+
+
+
+##### 17.简单说一下 Vue 的编译器都做了什么？
+
+Vue的编译器做了三件事：
+
+* **解析：**将html模板解析成 AST对象
+
+* **优化：** 遍历AST对象，为每个节点做静态标记，标记其是否为静态节点，然后进一步标记出静态根节点。 （这样在后续更新过程中就可以跳过这些静态节点了，标记静态根节点用于生成渲染函数阶段，生成静态根节点的渲染函数）
+
+* **生成渲染函数**：从AST生成渲染函数，即大家说的`render`，其实还有一个，就是 `staticRenderFns` 数组，里面存放了所有的静态节点的渲染函数
+
+  
+
+##### 18.详细说一下静态标记的过程？
+
+* 标记静态节点
+
+  * 通过递归的方式标记所有的元素节点
+  * 如果节点本身是静态节点，但是存在非静态的子节点，则将节点修改为非静态节点
+
+* 标记静态根节点，基于静态节点，进一步标记静态根节点
+
+  * 如果节点本身是静态节点 && 有子节点 && 子节点不只是一个文本节点，则标记为静态根节点
+
+    ```javascript
+     if (
+          node.static &&
+          node.children.length &&
+          !(node.children.length === 1 && node.children[0].type === 3)
+        ) {
+          // 节点本身是静态节点，而且有子节点，并且节点不只是一个文本节点，则标记为静态根节点
+          node.staticRoot = true;
+          return;
+        } else {
+          node.staticRoot = false;
+        }
+    ```
+
+  * 如果节点本身不是静态根节点，则递归遍历所有子节点，在子节点中标记静态根节点
+
+
+
+##### 19.什么样的节点才可以被标记为静态节点？
+
+* 文本节点
+* 节点上没有 v-bind、v-for、v-if等指令
+* 非组件
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -106,6 +106,7 @@ export function parse(
   const stack = [];
   const preserveWhitespace = options.preserveWhitespace !== false;
   const whitespaceOption = options.whitespace;
+  // 根节点，以 root 为根，处理后的节点都会按照层级挂载到 root 下，最后 return 的就是 root，一个 ast 语法树
   let root;
   let currentParent;
   let inVPre = false;
@@ -212,6 +213,7 @@ export function parse(
     }
   }
 
+  // 解析 html 模版字符串，处理所有标签以及标签上的属性
   parseHTML(template, {
     warn,
     expectHTML: options.expectHTML,
@@ -509,6 +511,12 @@ function processRef(el) {
   }
 }
 
+/**
+ * 处理 v-for，将结果设置到 el 对象上，得到:
+ *   el.for = 可迭代对象，比如 arr
+ *   el.alias = 别名，比如 item
+ * @param {*} el 元素的 ast 对象
+ */
 export function processFor(el: ASTElement) {
   let exp;
   if ((exp = getAndRemoveAttr(el, "v-for"))) {
