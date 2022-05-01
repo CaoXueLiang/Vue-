@@ -271,7 +271,30 @@ Vue的编译器做了三件事：
 
 
 
+##### 20.详细说一下渲染函数的生成过程？
 
+说到渲染函数，基本上说的就是 `render` 函数，其实编译器生成的渲染函数有两类：
+
+* 第一类就是`render`函数，负责生成动态节点的vnode
+* 第二类是放在一个叫 `staticRenderFns` 数组中的静态渲染函数，这些函数负责生成静态节点的vnode
+
+渲染函数生成的过程，其实就是遍历AST节点，通过递归的方式，处理每个节点，最后生成形如：`_c(tag, attr, children, normalizationType)`  的结果。tag是标签名，attr是属性对象，children是子节点组成的数组，其中每个元素的格式都是`_c(tag, attr, children, normalizationType)` 的形式，normalizationType 表示节点的规范化类型，不重要。
+
+在处理AST节点的过程中需要重点关注也是面试中常见的问题有：
+
+1、静态节点是怎么处理的？
+
+静态节点的处理分为两步：
+
+* 将生成的静态节点vnode函数放到 `staticRenderFns` 数组中
+* 返回一个` _m(idx)`的可执行函数，意思是执行`staticRenderFns`数组中下标为idx的函数，生成静态节点的vnode
+
+2、v-once、v-if、v-for、组件 等都是怎么处理的
+
+* 单纯的 v-once 节点处理方式和静态节点一致
+* v-if节点的处理结果是一个三元表达式
+* v-for 节点的处理结果是可执行的 _l 函数，该函数负责生成 v-for 节点的vnode
+* 组件的处理结果和普通元素一样，得到的是形如：`_c(compName)` 的可执行代码，生成组件的vnode
 
 
 
