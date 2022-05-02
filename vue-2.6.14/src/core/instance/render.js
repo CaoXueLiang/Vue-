@@ -28,7 +28,14 @@ export function initRender(vm: Component) {
   // so that we get proper render context inside it.
   // args order: tag, data, children, normalizationType, alwaysNormalize
   // internal version is used by render functions compiled from templates
-  // 定义_c, 他是`creaeElement`的一个柯里化方法
+  /**
+   * 定义_c, 他是`creaeElement`的一个柯里化方法
+   * @param {*} a 标签名
+   * @param {*} b 属性的JSON字符串
+   * @param {*} c 子节点列表
+   * @param {*} d 节点的规范化类型
+   * @returns
+   */
   vm._c = (a, b, c, d) => createElement(vm, a, b, c, d, false);
   // normalization is always applied for the public version, used in
   // user-written render functions.
@@ -85,6 +92,7 @@ export function setCurrentRenderingInstance(vm: Component) {
 
 export function renderMixin(Vue: Class<Component>) {
   // install runtime convenience helpers
+  // 在实例上挂载一些运行时需要用到的工具函数
   installRenderHelpers(Vue.prototype);
 
   Vue.prototype.$nextTick = function (fn: Function) {

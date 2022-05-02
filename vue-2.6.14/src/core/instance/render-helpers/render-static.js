@@ -2,8 +2,7 @@
 
 /**
  * Runtime helper for rendering static trees.
- * 运行时负责生成静态树的VNode
- * 完成了两件事：
+ * 运行时负责生成静态树的VNode 的帮助程序，完成了两件事：
  * 1. 执行 staticRenderFns 数组中指定下标的渲染函数，生成静态树的 VNode 并缓存，下次在渲染时从缓存中直接读取（isInFor 必须为 true）
  * 2. 为静态树的 VNode 打静态标记
  * @param {*} index index 表示当前静态节点的渲染函数在 staticRenderFns 数组中的下标索引
@@ -18,6 +17,7 @@ export function renderStatic(
   let tree = cached[index];
   // if has already-rendered static tree and not inside v-for,
   // we can reuse the same tree.
+  // 如果当前静态树已经已经被渲染过一次（即有缓存），而且没有被包裹在 v-for 指令所在节点的内部，则直接返回缓存的 vnode
   if (tree && !isInFor) {
     return tree;
   }
@@ -69,6 +69,9 @@ function markStatic(tree: VNode | Array<VNode>, key: string, isOnce: boolean) {
   }
 }
 
+/**
+ * 标记静态 vnode
+ */
 function markStaticNode(node, key, isOnce) {
   node.isStatic = true;
   node.key = key;

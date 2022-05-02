@@ -23,6 +23,7 @@ const ALWAYS_NORMALIZE = 2;
 // wrapper function for providing a more flexible interface
 // without getting yelled at by flow
 // 包装器函数，提供更加灵活的接口
+// 生成组件或普通标签的 vnode, 一个包装函数，不用管
 export function createElement(
   context: Component,
   tag: any,
@@ -45,6 +46,11 @@ export function createElement(
 
 /**
  * 生成VNode
+ * 1. 平台保留标签和未知元素执行 new Vnode() 生成 vnode
+ * 2. 组件执行 createComponent 生成 vnode
+ *    2.1 函数式组件执行自己的 render 函数生成 vnode
+ *    2.2 普通组件则实例化一个 vnode,并且在其 data.hook 对象上设置4个方法，在组件的 patch 节点会调用
+ *        从而进入子组件的实例化，挂载阶段，直至完成渲染
  * @param {*} context 上下文
  * @param {*} tag 标签名
  * @param {*} data 属性 JSON 字符串

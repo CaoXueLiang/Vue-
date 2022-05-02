@@ -94,6 +94,10 @@ const hooksToMerge = Object.keys(componentVNodeHooks);
 
 /**
  * 创建组件VNode
+ * 1. 函数式组件通过执行其 render 方法生成组件的VNode
+ * 2. 普通组件通过 new VNode() 生成其Vnode, 但是普通组件有一个重要操作是在 data.hook 对象上设置了四个钩子函数，
+ *    分别是 init, prepatch, insert, destroy 在组件的patch阶段会被调用
+ *    比如：init方法，调用时会进入子组件实例的创建挂载阶段，直至完成渲染
  * @param {*} Ctor 组件构造函数
  * @param {*} data 属性组成的 JSON 字符串
  * @param {*} context 上下文
@@ -132,6 +136,7 @@ export function createComponent(
     return;
   }
 
+  // 异步组件
   // async component
   let asyncFactory;
   if (isUndef(Ctor.cid)) {
@@ -145,28 +150,37 @@ export function createComponent(
     }
   }
 
+  // 节点属性的json字符串
   data = data || {};
 
+  // 这里其实就是组件做选项合并的地方，即编译器将组件编译为渲染函数，渲染时执行执行 render 函数，然后执行其中的 _c, 就走到这里了
+  // 解析构造函数选项，合并基类选项，以防止组件构造函数创建后应用全局混入
   // resolve constructor options in case global mixins are applied after
   // component constructor creation
   resolveConstructorOptions(Ctor);
 
+  // 将组件的 v-model 的信息，转换为 data.attrs 对象的属性，值和 data.on 对象上的事件，回调
   // transform component v-model data into props & events
   if (isDef(data.model)) {
     transformModel(Ctor.options, data);
   }
 
+  // 提取 props 数据，得到propsData对象，propsData[key] = val
+  // 以组件 props 配置中的属性为key,父组件中对应的数据为 value
   // extract props
   const propsData = extractPropsFromVNodeData(data, Ctor, tag);
 
+  // 函数式组件
   // functional component
   if (isTrue(Ctor.options.functional)) {
     return createFunctionalComponent(Ctor, propsData, data, context, children);
   }
 
+  // 获取事件监听器对象 data.on, 因为这些监听器需要作为子组件监听器处理，而不是DOM监听器
   // extract listeners, since these needs to be treated as
   // child component listeners instead of DOM listeners
   const listeners = data.on;
+  // 将带有 .native 修饰符的事件对象赋值给 data.on
   // replace with listeners with .native modifier
   // so it gets processed during parent component patch.
   data.on = data.nativeOn;
@@ -183,11 +197,17 @@ export function createComponent(
     }
   }
 
+  /**
+   * 在组件的data对象上设置hook对象
+   * hook对象增加四个属性：inint, prepatch, insert, destroy
+   * 负责组件的创建，更新，销毁 这些方法在组件的 patch 阶段会被调用
+   */
   // install component management hooks onto the placeholder node
   installComponentHooks(data);
 
   // return a placeholder vnode
   const name = Ctor.options.name || tag;
+  // 实例化组件的 VNode, 对于普通组件的标签名会比比较特殊， `vue-component-${Ctor.cid}${name ? `-${name}` : ""}`
   const vnode = new VNode(
     `vue-component-${Ctor.cid}${name ? `-${name}` : ""}`,
     data,
@@ -256,12 +276,18 @@ function mergeHook(f1: any, f2: any): Function {
 // transform component v-model info (value and callback) into
 // prop and event handler respectively.
 function transformModel(options, data: any) {
+  // model 的属性和事件，默认是 value和input
   const prop = (options.model && options.model.prop) || "value";
   const event = (options.model && options.model.event) || "input";
+  // 在data.attrs 对象上存储 v-model 的值
   (data.attrs || (data.attrs = {}))[prop] = data.model.value;
+  // 在data.on 对象上存储 v-model 的事件
   const on = data.on || (data.on = {});
+  // 已存在的事件回调函数
   const existing = on[event];
+  // v-model 中事件对应的回调函数
   const callback = data.model.callback;
+  // 合并回调函数
   if (isDef(existing)) {
     if (
       Array.isArray(existing)
