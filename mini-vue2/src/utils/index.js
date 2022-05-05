@@ -17,6 +17,16 @@ export function proxy(target, sourceKey, key) {
 }
 
 /**
+ * 是否为闭合标签。内置一些子闭合标签，为了处理简单
+ * @param {*} tagName
+ * @returns
+ */
+export function isUnaryTag(tagName) {
+  const unaryTag = ["input"];
+  return unaryTag.includes(tagName);
+}
+
+/**
  * 为对象上定义属性，并且是不可枚举类型
  * @param {*} target
  * @param {*} key
