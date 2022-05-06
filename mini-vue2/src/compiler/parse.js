@@ -152,10 +152,38 @@ export default function parse(template) {
       processVOn(curEle, onvalue, rawAttr[vOnValue]);
     }
 
+    // 🤓处理插槽内容
+    processSlotContent(curEle);
+
     // 节点处理完以后让其和父节点产生关系
     if (stackLength) {
       stack[stackLength - 1].children.push(curEle);
       curEle.parent = stack[stackLength - 1];
+
+      /**
+       * 🤓下面是处理插槽的
+       * 如果节点存在 slotName,则说明该节点是组件传递给插槽的内容
+       * 将插槽信息放到组件节点的 rawAttr.scopedSlots 对象上
+       * 而这些信息在生成组件插槽的 VNode 时（renderSlot）会用到
+       */
+      if (curEle.slotName) {
+        const { parent, slotName, scopeSlot, children } = curEle;
+        // 这里关于 children 的操作，只是单纯为了避免 JSON.stringify 的循环引用问题
+        // 因为生成渲染函数时需要对 attr 执行 JSON.stringify 方法
+        const slotInfo = {
+          slotName,
+          scopeSlot,
+          children: children.map((item) => {
+            delete item.parent;
+            return item;
+          }),
+        };
+        if (parent.rawAttr.scopedSlots) {
+          parent.rawAttr.scopedSlots[curEle.slotName] = slotInfo;
+        } else {
+          parent.rawAttr.scopedSlots = { [curEle.slotName]: slotInfo };
+        }
+      }
     }
   }
 }
@@ -230,4 +258,32 @@ function processVBind(curEle, bindKey, bindValue) {
  */
 function processVOn(curEle, vOnKey, vOnValue) {
   curEle.attr.vOn = { [vOnKey]: vOnValue };
+}
+
+/**
+ * 处理插槽
+ * <scope-slot>
+ *   <template v-slot:default="scopeSlot">
+ *      <div>{{ scopeSlot }}</div>
+ *   </template>
+ * </scope-slot>
+ * @param {AST} el 节点的AST对象
+ */
+function processSlotContent(el) {
+  // 注意：具有 v-slot:xx 属性的template只能时组件的根元素，这里不做判断
+  // 获取插槽信息
+  if (el.tag === "template") {
+    const attrMap = el.rawAttr;
+    // 遍历属性 map 对象，找出其中的 v-slot指令信息
+    for (const key in attrMap) {
+      const result = key.match(/v-slot:(.*)/);
+      if (result) {
+        // 获取插槽的名称和值 v-slot:default = xx
+        const slotName = (el.slotName = result[1]);
+        el.scopeSlot = attrMap[`v-slot:${slotName}`];
+        // 直接 return,因为该标签上只可能有一个 v-slot 指令
+        return;
+      }
+    }
+  }
 }

@@ -27,6 +27,25 @@ export function isUnaryTag(tagName) {
 }
 
 /**
+ * 是否是平台保留标签
+ * @param {*} tagName
+ */
+export function isReserveTag(tagName) {
+  const reserveTag = [
+    "div",
+    "h3",
+    "span",
+    "input",
+    "select",
+    "option",
+    "p",
+    "button",
+    "template",
+  ];
+  return reserveTag.includes(tagName);
+}
+
+/**
  * 为对象上定义属性，并且是不可枚举类型
  * @param {*} target
  * @param {*} key
