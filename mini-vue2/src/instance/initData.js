@@ -1,5 +1,5 @@
-import { proxy } from "./utils/index.js";
-import { observe } from "./observer/index.js";
+import { proxy } from "../utils/index.js";
+import { observe } from "../observer/index.js";
 
 /**
  * 初始化data
