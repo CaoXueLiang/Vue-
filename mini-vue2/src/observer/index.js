@@ -77,7 +77,7 @@ function defineReactive(obj, key, value) {
           childOb.dep.depend();
         }
       }
-      console.log(`getter: key = ${key}`);
+      // console.log(`getter: key = ${key}`);
       return value;
     },
     set(newValue) {

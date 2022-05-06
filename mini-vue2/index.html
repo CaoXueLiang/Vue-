@@ -45,7 +45,7 @@
       <scope-slot></scope-slot>
       <scope-slot>
         <template v-slot:default="scopeSlot">
-          <div>{{ scopeSlot }}</div>
+          <div>custom slot content</div>
         </template>
       </scope-slot>
     </div>
@@ -70,6 +70,7 @@
             inputVal: "test",
             isChecked: true,
             selectValue: 2,
+            scopeSlot: "我是插槽内容",
           };
         },
         // methods + 事件 + 数据响应式更新 原理
@@ -125,12 +126,12 @@
           "scope-slot": {
             template: `
             <div>
-              <slot name="default" v-bind:slotKey="slotKey">{{ slotKey }}</slot>
+              <slot name="default" v-bind:slotKey="slotKey"><h3>{{ slotKey }}</h3></slot>
             </div>
           `,
             data() {
               return {
-                slotKey: "scope slot content",
+                slotKey: "default slot content",
               };
             },
           },
