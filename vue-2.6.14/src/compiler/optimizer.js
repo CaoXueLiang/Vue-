@@ -123,6 +123,7 @@ function markStaticRoots(node: ASTNode, isInFor: boolean) {
     ) {
       // 节点本身是静态节点，而且有子节点，并且节点不只是一个文本节点，则标记为静态根节点
       node.staticRoot = true;
+      // 注意：如果当前节点已经被标记为静态根节点，则将不会再处理子节点
       return;
     } else {
       node.staticRoot = false;
@@ -145,10 +146,15 @@ function markStaticRoots(node: ASTNode, isInFor: boolean) {
 
 /**
  * 判断节点是否为静态节点：
- * 通过自定义的 node.type 来判断。2：表达式 => 动态，3：文本 => 静态
- * 凡是有 v-bind, v-if, v-for 等指令的都属于动态节点
- * 组件为动态节点
- * 父节点为含有 v-for 指令的template标签，则为动态节点
+ * 1.通过自定义的 node.type 来判断。2：表达式 => 动态，3：文本 => 静态纯文本
+ * 2.如果节点上有 v-pre 指令，那么可以直接判断它是一个静态节点
+ * 3.如果没有 v-pre 执行，那么它必须满足以下条件才会被认为时一个静态节点：
+ *   ① 不能使用动态绑定语法，也就是说标签上不能有 v-on, @ , : 开头的属性
+ *   ② 不能使用 v-if, v-for, 或者 v-else 指令
+ *   ③ 不能是内置标签，也就是说标签名不能是 slot 或者 component
+ *   ④ 不能是组件，即标签名必须是平台保留标签，例如 <div></div>是平台保留标签，而<list></list> 不是保留标签
+ *   ⑤ 当前节点的父节点不能是带 v-for 指令的 template 标签
+ *   ⑥ 节点中不存在动态节点才会有的属性
  * @param {*} node
  * @returns
  */
@@ -166,7 +172,7 @@ function isStatic(node: ASTNode): boolean {
     (!node.hasBindings && // no dynamic bindings
       !node.if &&
       !node.for && // not v-if or v-for or v-else
-      !isBuiltInTag(node.tag) && // not a built-in
+      !isBuiltInTag(node.tag) && // not a built-in //不是内置标签
       isPlatformReservedTag(node.tag) && // not a component
       !isDirectChildOfTemplateFor(node) &&
       Object.keys(node).every(isStaticKey))
