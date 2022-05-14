@@ -17,6 +17,20 @@ const idToTemplate = cached((id) => {
   return el && el.innerHTML;
 });
 
+/**
+ * const mount = Vue.prototype.$mount;
+ * Vue.prototype.$mount = function (el){
+ *    // 做些什么
+ *    return mount.call(this,el)
+ * }
+ *
+ *❗注意：这里做了函数劫持
+ * 我们将 Vue原型上的 $mount 方法保存到了 mount中，以便后续使用。
+ * 然后 Vue原型上的$mount方法被一个新的方法覆盖了。新方法中会调用原始的方法，这种做法通常被称为函数劫持。
+ * 通过函数劫持，可以在原始功能之上增加一些其他功能。在上面的代码中，vm.$mount 的原始方法就是 mount 的核心功能，
+ * 而在完整版中（包含编译器）需要将编译器功能新增到核心功能上去。
+ */
+
 const mount = Vue.prototype.$mount;
 /**
  * 编译器的入口

@@ -15,12 +15,13 @@ function Vue(options) {
 
 // 定义 Vue.prototype._init 方法
 initMixin(Vue);
-// 定义：Vue.prototype.$data, $props, $set, $delete, $watch
+// 定义数据相关的实例方法
+// Vue.prototype.$data, $props, $set, $delete, $watch
 stateMixin(Vue);
 // 定义事件相关方法
 // $on, $off, $once, $emit
 eventsMixin(Vue);
-// 定义:
+// 定义生命周期相关的实例方法
 // Vue.prototype._update | Vue.prototype.$forceUpdate | Vue.prototype.$destroy
 lifecycleMixin(Vue);
 /**

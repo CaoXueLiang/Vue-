@@ -14,7 +14,6 @@ export const createCompiler = createCompilerCreator(function baseCompile(
   template: string,
   options: CompilerOptions
 ): CompiledResult {
-  debugger;
   // 将模板解析为 AST，每个节点的ast对象上都设置了元素的所有信息，比如：标签信息，属性信息，插槽信息，父节点，子节点等
   const ast = parse(template.trim(), options);
   // 优化，遍历 AST，为每个节点做静态标记

@@ -112,7 +112,10 @@ export function lifecycleMixin(Vue: Class<Component>) {
    * 1.清理它与其他实例的连接，将其从父组件的children中移除
    * 2.移除依赖监听
    * 3.调用__patch__，销毁节点
-   * 3.关闭实例的所有事件监听
+   * 3.关闭实例的所有事件监听器
+   *
+   *《深入浅出Vue.js》书籍描述：
+   * vm.$destroy 的作用是完全销毁一个实例，它会清理该实例与其他实例的连接，并解绑其全部指令及监听器，同时触发 beforeDestroy 和 destroyed钩子函数
    */
   Vue.prototype.$destroy = function () {
     const vm: Component = this;
@@ -129,11 +132,12 @@ export function lifecycleMixin(Vue: Class<Component>) {
     if (parent && !parent._isBeingDestroyed && !vm.$options.abstract) {
       remove(parent.$children, vm);
     }
-    // 移除依赖监听
+    // 移除依赖监听（渲染 watcher）
     // teardown watchers
     if (vm._watcher) {
       vm._watcher.teardown();
     }
+    // 移除所有的用户watcher (vm.$watch产生的)
     let i = vm._watchers.length;
     while (i--) {
       vm._watchers[i].teardown();

@@ -137,6 +137,8 @@ export function initInternalComponent(
 
 /**
  * 从组件构造函数中解析配置对象 options，并合并基类对象
+ * 作用是：获取当前实例中构造函数的 options 选项，及其所有父级的构造函数的 options
+ *
  * @param {*} Ctor
  * @returns
  */

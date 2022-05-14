@@ -13,18 +13,22 @@ export function initEvents(vm: Component) {
   vm._events = Object.create(null);
   vm._hasHookEvent = false;
   // init parent attached events
+  // 初始化父组件附加的事件
   const listeners = vm.$options._parentListeners;
   if (listeners) {
+    // 将父组件向子组件注册的事件注册到子组件实例中
     updateComponentListeners(vm, listeners);
   }
 }
 
 let target: any;
 
+// 添加事件
 function add(event, fn) {
   target.$on(event, fn);
 }
 
+// 移除事件
 function remove(event, fn) {
   target.$off(event, fn);
 }
