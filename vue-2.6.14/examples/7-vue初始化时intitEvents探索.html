@@ -17,7 +17,9 @@
             count: 0,
           };
         },
-        template: "<div @click='buttonClicked'>我是子组件-{{count}}</div>",
+        template: `<div>
+                     <button @click='buttonClicked'>我是子组件-{{count}}</button>
+                  </div>`,
         methods: {
           buttonClicked() {
             console.log("---child---", this._events);

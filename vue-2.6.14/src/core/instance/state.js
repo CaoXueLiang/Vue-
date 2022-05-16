@@ -59,6 +59,8 @@ export function proxy(target: Object, sourceKey: string, key: string) {
  *   2.computed:其中更适合做一些同步操作
  */
 export function initState(vm: Component) {
+  // 用来保存当前组件中所有的 watcher 实例
+  // 无论是使用 vm.$watch 注册的实例，还是使用 watch 选项添加的 watcher 实例，都会添加到 vm._watchers 中
   vm._watchers = [];
   const opts = vm.$options;
   console.log("----vm.$options---", opts);
@@ -94,6 +96,7 @@ function initProps(vm: Component, propsOptions: Object) {
   const keys = (vm.$options._propKeys = []);
   const isRoot = !vm.$parent;
   // root instance props should be converted
+  // 判断当前组件是否是根组件，如果不是，那么不需要将props数据转换为响应式数据
   if (!isRoot) {
     toggleObserving(false);
   }
@@ -267,6 +270,7 @@ export function defineComputed(
   key: string,
   userDef: Object | Function
 ) {
+  // 是否需要缓存，服务端渲染不需要缓存
   const shouldCache = !isServerRendering();
   if (typeof userDef === "function") {
     sharedPropertyDefinition.get = shouldCache
@@ -297,6 +301,12 @@ export function defineComputed(
 
 /**
  * computed属性值会缓存的原理是：watcher.ditry, watcher.evaluate, watcher.update实现的
+ * 执行 this.xxx （xxx为计算属性） 实际上是访问 computedGetter函数
+ * 每当计算属性被读取时，computedGetter 函数都会被执行
+ *
+ * 存在的问题❗：https://hub.fastgit.xyz/vuejs/vue/issues/7767
+ * revert: https://hub.fastgit.xyz/vuejs/vue/commit/6b1d431a89f3f7438d01d8cc98546397f0983287
+ * 回退的原因：https://hub.fastgit.xyz/vuejs/vue/issues/8446
  */
 function createComputedGetter(key) {
   return function computedGetter() {
@@ -305,6 +315,13 @@ function createComputedGetter(key) {
       if (watcher.dirty) {
         watcher.evaluate();
       }
+      // 这段代码的目的在于将读取计算属性的那个 watcher 添加到计算属性所依赖的所有状态的依赖列表中
+      // 换句话说，就是让读取计算属性的那个 watcher 持续观察计算属性所依赖的状态的变化
+      /**
+       * this.deps 是计算属性中用到的所有状态的dep实例，而依次执行了dep实例的depend方法
+       * 就是将组件的 watcher 依次加入到这些dep实例的依赖列表中，这就实现了让组件的 watcher
+       * 观察计算属性中用到的所有状态的变化，当这些状态发生变化时，组件的watcher会收到通知，从而重新渲染操作
+       */
       if (Dep.target) {
         watcher.depend();
       }

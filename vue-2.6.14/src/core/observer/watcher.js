@@ -166,6 +166,7 @@ export default class Watcher {
    */
   update() {
     if (this.lazy) {
+      debugger;
       // 懒加载时走这里，比如 computed
       // 将 dirty 设置为 true，可以让 computedGetter 执行时重新计算 computed 回调函数的执行结果
       this.dirty = true;
@@ -174,6 +175,7 @@ export default class Watcher {
       // 当为true时，数据更新时，该watcher就不走异步更新队列，直接执行 this.run
       this.run();
     } else {
+      debugger;
       // 更新时一般都走这里，将watcher放到watcher队列
       queueWatcher(this);
     }

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head></head>
+  <body>
+    <div id="app">
+      <div>{{sumNumber}}</div>
+      <div>
+        <button @click="changeNumber">修改数字</button>
+      </div>
+    </div>
+    <script src="../../dist/vue.js"></script>
+    <script>
+      new Vue({
+        el: "#app",
+        data: {
+          firstNumber: 1,
+          secondNumber: 2,
+        },
+        computed: {
+          sumNumber() {
+            return this.firstNumber + this.secondNumber;
+          },
+        },
+        mounted() {
+          console.log("---mounted----vue-------", this);
+        },
+        methods: {
+          changeNumber() {
+            this.firstNumber++;
+          },
+        },
+      });
+    </script>
+  </body>
+</html>
