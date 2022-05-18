@@ -25,6 +25,7 @@ export const createCompiler = createCompilerCreator(function baseCompile(
   }
   // 从 AST 生成渲染函数，生成像这样的代码，比如：code.render = "_c('div',{attrs:{"id":"app"}},_l((arr),function(item){return _c('div',{key:item},[_v(_s(item))])}),0)"
   const code = generate(ast, options);
+  debugger;
   return {
     ast,
     render: code.render,

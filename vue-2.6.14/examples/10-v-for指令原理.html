@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head></head>
+  <body>
+    <div id="app">
+      <div v-for="(item,index) in dataList">{{item}}</div>
+    </div>
+    <script src="../../dist/vue.js"></script>
+    <!-- 
+      最终生成的代码字符串是这样：
+      `with(this){return _c('div',{attrs:{"id":"app"}},_l((dataList),function(item,index){return _c('div',[_v(_s(item))])}),0)}`
+      `_l((dataList),function(item,index){return _c('div',[_v(_s(item))])})`
+
+      其中，_l 是函数 renderList 别名。当执行这段代码字符串时，_l函数会循环变量 dataList 并依次调用第二个参数所传递的函数
+      同时，会传递两个参数: item 和 index
+     -->
+    <script>
+      new Vue({
+        el: "#app",
+        data: {
+          dataList: ["a", "b", "c", "d"],
+        },
+        methods: {
+          changeNumber() {
+            this.firstNumber++;
+          },
+        },
+      });
+    </script>
+  </body>
+</html>

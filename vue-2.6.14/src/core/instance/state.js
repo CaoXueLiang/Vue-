@@ -312,6 +312,7 @@ function createComputedGetter(key) {
   return function computedGetter() {
     const watcher = this._computedWatchers && this._computedWatchers[key];
     if (watcher) {
+      debugger;
       if (watcher.dirty) {
         watcher.evaluate();
       }

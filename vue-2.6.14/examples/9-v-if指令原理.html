@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head></head>
+  <body>
+    <div id="app">
+      <div v-if="isShow">显示时的内容</div>
+      <div v-else>不显示时的内容</div>
+    </div>
+    <script src="../../dist/vue.js"></script>
+    <!-- 
+      最终生成的代码字符串是这样：
+      `with(this){return _c('div',{attrs:{"id":"app"}},[(isShow)?_c('div',[_v("显示时的内容")]):_c('div',[_v("不显示时的内容")])])}`
+      这段代码字符串在最终执行时，会根据 isShow 变量的值来选择创建哪个节点
+     -->
+    <script>
+      new Vue({
+        el: "#app",
+        data: {
+          isShow: true,
+        },
+        methods: {
+          changeNumber() {
+            this.firstNumber++;
+          },
+        },
+      });
+    </script>
+  </body>
+</html>
