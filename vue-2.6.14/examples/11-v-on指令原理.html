@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head></head>
+  <body>
+    <div id="app">
+      <button @click="singleClick" @dblclick="doubleClick">button</button>
+    </div>
+    <script src="../../dist/vue.js"></script>
+    <script>
+      const vm = new Vue({
+        el: "#app",
+        data: {
+          dataList: ["a", "b", "c", "d"],
+        },
+        methods: {
+          singleClick() {
+            console.log("single click");
+          },
+          doubleClick() {
+            console.log("doule click");
+          },
+        },
+      });
+      console.log(vm);
+    </script>
+  </body>
+</html>
+
+<!--
+  模板编译之后生成的代码字符串： 
+  `with(this){return _c('div',{attrs:{"id":"app"}},[_c('button',{on:{"click":singleClick,"dblclick":doubleClick}},[_v("button")])])}`
+  
+  1.从模板解析到生成VNode, 最终事件会被保存到VNode中，然后可以通过 vnode.data.on 得到一个节点注册的所有事件
+    虚拟DOM在 patch 过程中会根据不同的时机触发不同的钩子函数。
+  2.事件绑定相关的处理逻辑分别设置了 create 与 update 钩子函数，也就是说在patch过程中，每当一个DOM元素被创建或更新时，都会触发事件绑定相关的处理逻辑。
+    事件绑定相关的处理逻辑是一个叫 updateDOMListeners 的函数，而 create 与 update 钩子函数执行的都是这个函数
+  3.updateDOMListeners 函数内部，通过对比两个VNode中的事件对象，来决定绑定原生DOM事件还是解绑原生DOM事件，分别调用 addEventListener 和 removeEventListener
+    在原生DOM元素上绑定和解绑事件
+ -->
