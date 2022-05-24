@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head></head>
+  <body>
+    <div id="app">
+      <div>{{message | capitalize('paragram')}}</div>
+    </div>
+    <script src="../../dist/vue.js"></script>
+    <script>
+      const vm = new Vue({
+        el: "#app",
+        data: {
+          message: "the mystery of filters",
+        },
+        filters: {
+          capitalize: function (val) {
+            if (!val) return "";
+            val = val.toString();
+            return val.charAt(0).toUpperCase() + val.slice(1);
+          },
+
+          filterA(val) {
+            if (!val) return "";
+            val = val.toString();
+            return (
+              val.slice(0, val.length - 1) +
+              val.slice(val.length - 1).toUpperCase()
+            );
+          },
+        },
+        methods: {},
+      });
+      console.log(vm);
+    </script>
+  </body>
+</html>
+
+<script>
+  // 解析过滤器伪代码
+  function parseFilters(exp) {
+    let filters = exp.split("|");
+    let expression = filters.shift().trim();
+    if (filters) {
+      for (let index = 0; index < filters.length; index++) {
+        const element = filters[index].trim();
+        expression = wrapFilter(expression, element);
+      }
+    }
+    return expression;
+  }
+
+  function wrapFilter(exp, filter) {
+    const i = filter.indexOf("(");
+    if (i < 0) {
+      return `_f("${filter}")(${exp})`;
+    } else {
+      const name = filter.slice(0, i);
+      const args = filter.slice(i + 1);
+      return `_f("${name}")(${exp},${args}`;
+    }
+  }
+
+  console.log(parseFilters(`message | capitalize`));
+  console.log(parseFilters(`message | filterA | filterB`));
+  console.log(parseFilters(`message | filterA('arg1','arg2')`));
+</script>
+
+<!-- 
+  一、我们可以使用自定义的过滤器来格式化文本，它可以用在两个地方：双花括号插值和 v-bind 表达式，它应该被添加到JavaScript表达式的尾部，由管道符号分割 `|`
+    1.在双括号中： {{message | filter}}
+    2.在v-bind中：<div v-bind:id="rawId | filter"></div>
+
+  二、过滤器的实现原理(普通、串联、带参数)
+     1. {{message | capitalize}} 模板解析后生成的代码字符串为 `_s(_f("capitalize")(message))`
+     2. {{message | capitalize | filterA}} 模板解析后生成的代码字符串为 `_s(_f("filterA")(_f("capitalize")(message)))`
+     3. {{message | capitalize('paragram')}} 模板解析后生成的代码字符串为  `_s(_f("capitalize")(message,'paragram'))`  
+
+     其中 _s 函数是 toString函数的别名
+     其中 _f 函数时 resolveFilter 函数的别名，其作用是从 this.$options.filters 中找到注册的过滤器并返回
+     _f('capitalize') 与函数 this.$options.filters['capitalize'] 相同
+     _f('capitalize')('message') 其实就是执行了过滤器 capitalize 并传递了参数 message
+
+     简单来说：其实就是执行了 capitalize 过滤器函数并把 message当作参数传递进去，接着将capitalize过滤器处理后的结果当作参数传递给 toString 函数。最终toString函数
+     执行后的结果会保存到VNode中的text属性中。换句话说，这个返回结果直接被拿去渲染视图了.
+ -->

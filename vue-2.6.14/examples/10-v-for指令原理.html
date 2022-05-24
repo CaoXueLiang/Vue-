@@ -12,7 +12,7 @@
       `_l((dataList),function(item,index){return _c('div',[_v(_s(item))])})`
 
       其中，_l 是函数 renderList 别名。当执行这段代码字符串时，_l函数会循环变量 dataList 并依次调用第二个参数所传递的函数
-      同时，会传递两个参数: item 和 index
+      同时，会传递两个参数: item 和 index。 最终生成 vnode数组，在patch过程中生辰真实的DOM节点
      -->
     <script>
       new Vue({
